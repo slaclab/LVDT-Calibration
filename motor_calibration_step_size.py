@@ -11,7 +11,7 @@ this file, call the terminal command "pydm -m '{"MAD":"[MAD]"}' motor_calibratio
 short name. An example would be pydm -m '{"MAD":"CEDOG-POSY"}' motor_calibration_step_size.py.
 '''
 
-devices = { 
+devices_short_to_long = { 
 'UMHTR':'USEG:HTR:650' ,
 'WSDG01':'WIRE:DIAG0:424' ,
 'CEHTR-POSX':'COLL:HTR:615:POSX' ,
@@ -95,7 +95,7 @@ class ProvideStepSizeDisplay(Display):
         super(ProvideStepSizeDisplay, self).__init__(parent=parent, args=args, macros=macros)
 
         self.device_short_name = macros.get("MAD")
-        self.device_name = devices.get(macros.get("MAD"))
+        self.device_name = devices_short_to_long.get(macros.get("MAD"))
         self.egu = ''.join((self.device_name, ':MOTR.EGU'))
 
         '''Connect Spin Box to MOTR.TWV channel'''
