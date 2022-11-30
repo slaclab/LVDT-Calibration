@@ -29,7 +29,6 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt#from colorama import Fore, Back, Style
 import mc_mad_pv_names
-
 '''
 This file sets up the GUI for the main display for the General Motion Calibration Tool. It is also responsible for
 the execution of the data collection and data analysis. This file utilizes multithreading in order to properly handle
