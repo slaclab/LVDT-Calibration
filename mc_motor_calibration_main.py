@@ -28,7 +28,7 @@ from math import sqrt
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt#from colorama import Fore, Back, Style
-import mad_pv_names
+import mc_mad_pv_names
 '''
 This file sets up the GUI for the main display for the General Motion Calibration Tool. It is also responsible for
 the execution of the data collection and data analysis. This file utilizes multithreading in order to properly handle
@@ -91,7 +91,7 @@ class MainWindow(Display):
 
         # Variables to be used throughout UI
         self.device_short_name = macros.get("MAD")
-        self.device_name = mad_pv_names.devices_mad_to_pv_name.get(self.device_short_name)
+        self.device_name = mc_mad_pv_names.devices_mad_to_pv_name.get(self.device_short_name)
         self.motor_egu = epics.caget(('{}:MOTR.EGU').format(self.device_name))
         self.lvraw_egu = epics.caget(('{}:LVRAW.EGU').format(self.device_name))
         self.motor_twv = epics.caget(('{}:MOTR.TWV').format(self.device_name))
