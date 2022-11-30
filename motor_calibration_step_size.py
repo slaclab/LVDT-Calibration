@@ -1,9 +1,10 @@
 from os import path
 from pydm import Display, PyDMApplication
-import calibrate_motor_lvdt_modified
+# import calibrate_motor_lvdt_modified
 import epics
 from qtpy.QtWidgets import QPushButton
 import subprocess
+import mad_pv_names
 
 '''
 This file is in charge of the GUI for the Step Size Screen of the General Motion Calibration Tool. In order to execute
@@ -16,7 +17,7 @@ class ProvideStepSizeDisplay(Display):
         super(ProvideStepSizeDisplay, self).__init__(parent=parent, args=args, macros=macros)
 
         self.device_short_name = macros.get("MAD")
-        self.device_name = calibrate_motor_lvdt_modified.devices.get(macros.get("MAD"))
+        self.device_name = mad_pv_names.devices_mad_to_pv_name.get(macros.get("MAD"))
         self.egu = ''.join((self.device_name, ':MOTR.EGU'))
 
         '''Connect Spin Box to MOTR.TWV channel'''

@@ -3,6 +3,8 @@ from pydm import Display, PyDMApplication
 from pydm.widgets import PyDMRelatedDisplayButton
 from qtpy.QtWidgets import QHBoxLayout, QFileDialog, QPushButton
 import subprocess
+import mad_pv_names
+
 
 '''
 This file is in charge of the GUI for the Provide File Screen of the General Motion Calibration Tool.
@@ -15,9 +17,12 @@ the Step Size Screen and the Main Screen.
 class ProvideFileDisplay(Display):
     def __init__(self, parent=None, args=None, macros=None):
         super(ProvideFileDisplay, self).__init__(parent=parent, args=args, macros=macros)
-        self.device_short_name = macros.get("MAD")
+
+        self.device_long_name = macros.get("P")
+        self.device_short_name = mad_pv_names.devices_pv_name_to_mad.get(self.device_long_name)
+        # self.device_short_name = macros.get("MAD")
         # print(self.device_short_name)
-        self.TitleLabel.setText(("General Motion Calibration - {}").format(macros.get("MAD")))
+        self.TitleLabel.setText(("General Motion Calibration - {}").format(self.device_short_name))
         self.ui.HeaderLabel.setText('Find a .csv file with calibration data or continue with no file.\nFile currently selected: None')
 
         '''Set up the button that opens a QFileDIalog'''
