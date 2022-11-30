@@ -87,7 +87,7 @@ class MainWindow(Display):
         super(MainWindow, self).__init__(parent=parent, args=args, macros=macros)
 
         # [EDIT FOR YOUR PERSONAL CONFIGURATIONS] Global Variable that holds the directory where data is to be saved
-        self.path = '/u/gu/allyc/work/project' # During testing, this was /u/gu/allyc/work/project. Should be $PHYSICS_DATA/genMotion/lvdtCal or whatever user wants it to be
+        self.path = '$PHYSICS_DATA/genMotion/lvdtCal' # During testing, this was /u/gu/allyc/work/project. Should be $PHYSICS_DATA/genMotion/lvdtCal or whatever user wants it to be
 
         # Variables to be used throughout UI
         self.device_short_name = macros.get("MAD")
