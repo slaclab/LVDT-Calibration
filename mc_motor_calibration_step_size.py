@@ -38,7 +38,7 @@ class ProvideStepSizeDisplay(Display):
 
     '''When button is pressed, subprocess is launched to open main screen'''
     def next_display(self): 
-        subprocess.call(['python', '/usr/local/lcls/tools/pydm/display/mc_motor_calibration_main.py', self.device_short_name])
+        subprocess.call(['python', '/usr/local/lcls/tools/pydm/display/mc/LVDT-Calibration/mc_motor_calibration_main.py', self.device_short_name])
 
     def ui_filename(self):
         return 'mc_motor_calibration_step_size.ui'
