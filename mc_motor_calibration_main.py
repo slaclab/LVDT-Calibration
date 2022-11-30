@@ -28,8 +28,12 @@ from math import sqrt
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt#from colorama import Fore, Back, Style
+<<<<<<< HEAD:motor_calibration_main_2.py
 import meme.names
 
+=======
+import mc_mad_pv_names
+>>>>>>> main:mc_motor_calibration_main.py
 '''
 This file sets up the GUI for the main display for the General Motion Calibration Tool. It is also responsible for
 the execution of the data collection and data analysis. This file utilizes multithreading in order to properly handle
@@ -41,6 +45,7 @@ information for the program, call one of the prior screens of the 'flow'.*
 *Warning: Pushing 1 to extract all for collimators was deleted from this file and, if to be readded, must also be tested.*
 '''
 
+<<<<<<< HEAD:motor_calibration_main_2.py
 devices_short_to_long = { 
 'UMHTR':'USEG:HTR:650' ,
 'WSDG01':'WIRE:DIAG0:424' ,
@@ -120,6 +125,8 @@ devices_short_to_long = {
 'WS744':'WIRE:LI28:744' , 
 }
 
+=======
+>>>>>>> main:mc_motor_calibration_main.py
 '''
  Defines the signals available from a running worker thread.
 '''
@@ -171,7 +178,11 @@ class MainWindow(Display):
 
         # Variables to be used throughout UI
         self.device_short_name = macros.get("MAD")
+<<<<<<< HEAD:motor_calibration_main_2.py
         self.device_name = devices_short_to_long.get(self.device_short_name)
+=======
+        self.device_name = mc_mad_pv_names.devices_mad_to_pv_name.get(self.device_short_name)
+>>>>>>> main:mc_motor_calibration_main.py
         self.motor_egu = epics.caget(('{}:MOTR.EGU').format(self.device_name))
         self.lvraw_egu = epics.caget(('{}:LVRAW.EGU').format(self.device_name))
         self.motor_twv = epics.caget(('{}:MOTR.TWV').format(self.device_name))
@@ -197,10 +208,24 @@ class MainWindow(Display):
                     pos_or_neg = 'NEG'
                 else: pos_or_neg = 'POS'
                 self.other_motor =     self.device_name[:-4] + pos_or_neg + x_or_y
+<<<<<<< HEAD:motor_calibration_main_2.py
                 self.header_text_1 =  'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. Calibration data is saved in {}. High and Low limits will be saved and restored at the end of data collections.'.format(self.motor_twv, self.motor_egu, self.filename, self.path)
                 self.header_text_2 = 'Save High Limit value: {}\nSave Low Limit value: {}\nPrevious POS motor position: {} {} \nPrevious NEG motor position: {} {}'.format(epics.caget('{}:MOTR.HLM'.format(self.device_name)), epics.caget('{}:MOTR.LLM'.format(self.device_name)), epics.caget('{}:MOTR.RBV'.format(self.device_name)), self.motor_egu, epics.caget('{}:MOTR.RBV'.format(self.other_motor)), self.motor_egu)
             else:
                 self.header_text_1 = 'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. Calibration data is saved in $PHYSICS_DATA/genMotion/lvdtCal. High and Low limits will be saved and restored at the end of data collections.'.format(self.motor_twv, self.motor_egu, self.filename)
+=======
+                self.header_text_1 =  'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. \
+                    Calibration data is saved in {}. High and Low limits will be saved and restored at the end of data collections.'\
+                        .format(self.motor_twv, self.motor_egu, self.filename, self.path)
+                self.header_text_2 = 'Save High Limit value: {}\nSave Low Limit value: {}\nPrevious POS motor position: {} {}\
+                     \nPrevious NEG motor position: {} {}'.format(epics.caget('{}:MOTR.HLM'.format(self.device_name)), \
+                     epics.caget('{}:MOTR.LLM'.format(self.device_name)), epics.caget('{}:MOTR.RBV'.format(self.device_name)), \
+                        self.motor_egu, epics.caget('{}:MOTR.RBV'.format(self.other_motor)), self.motor_egu)
+            else:
+                self.header_text_1 = 'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. \
+                    Calibration data is saved in $PHYSICS_DATA/genMotion/lvdtCal. High and Low limits will be saved and restored \
+                        at the end of data collections.'.format(self.motor_twv, self.motor_egu, self.filename)
+>>>>>>> main:mc_motor_calibration_main.py
                 self.header_text_2 = 'Save High Limit value: {} \nSave Low Limit value: {}\nPrevious motor position: {} {}'.format(epics.caget('{}:MOTR.HLM'.format(self.device_name)), epics.caget('{}:MOTR.LLM'.format(self.device_name)), epics.caget('{}:MOTR.RBV'.format(self.device_name)), self.motor_egu)
 
         # Intialize the main status label
@@ -429,6 +454,23 @@ class MainWindow(Display):
             self.list_of_coefs.append(self.sub_pv_val)
         return self.list_of_coefs
 
+    '''Function which generates .txt file to store percent error on the position'''
+    def make_percent_err_file(self, pos, pos_est):
+        self.percent_err_file = '{}_{}_percent_error.txt'.format(self.device_name, self.timestamp)
+        self.percent_err_file = os.path.join(self.path, self.old_coef_file)
+
+        with open(self.percent_err_file, 'w') as f:
+            self.first_line = "Est. position, Act. position, Percent Error\n"
+            f.writelines(self.first_line)
+
+            self.lines = []
+            for i in range(len(pos)):
+                self.cur_percent_err = ((pos_est[i] - pos[i])/pos[i]) * 100
+                self.cur_line= str(pos_est[i], pos[i], self.cur_percent_err)
+                self.lines.append(self.cur_line)
+            f.writelines('\n'.join(self.lines))
+        f.close()
+
     '''Function which displays collected data for the error analysis. Occurs after data analysis button is pressed.
     '''
     def display_error_analysis(self, lvdt, pos, pos_est):
@@ -502,14 +544,14 @@ class MainWindow(Display):
         # Gather data from .csv file
         self.data = np.genfromtxt(self.csv_file)
         self.ordered = self.data[np.argsort(self.data[:,0])]
-        self.lvdt_v, self.position_mm = self.ordered.T
+        self.lvdt_v, self.position = self.ordered.T
 
         # Find best degree based on lowest RMSE
-        self.baseline = cv(self.lvdt_v, self.position_mm, 0)
+        self.baseline = cv(self.lvdt_v, self.position, 0)
         self.curr_deg = self.best_deg = 1
         self.curr_err = self.best_err = self.baseline
         while self.curr_deg < min(8, len(self.lvdt_v)) and self.curr_err <= self.baseline:
-            self.curr_err = cv(self.lvdt_v, self.position_mm, self.curr_deg)
+            self.curr_err = cv(self.lvdt_v, self.position, self.curr_deg)
             if self.curr_err < self.best_err:
                 self.best_deg, self.best_err = self.curr_deg, self.curr_err
             self.degrees_table.setItem(0, self.curr_deg - 1, QTableWidgetItem(str(self.curr_err)))
@@ -520,7 +562,7 @@ class MainWindow(Display):
         self.degrees_table.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.degrees_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch) 
 
-        self.p, self.rmse = fit(self.lvdt_v, self.position_mm, self.lvdt_v, self.position_mm, self.best_deg)
+        self.p, self.rmse = fit(self.lvdt_v, self.position, self.lvdt_v, self.position, self.best_deg)
         
         # Generate a .txt file of the new coefficients
         self.coef_file = '{}_{}.txt'.format(self.device_name, self.timestamp)
@@ -556,17 +598,20 @@ class MainWindow(Display):
         self.coefs_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
         # Display error analysis
-        self.position_mm_est = np.polyval(self.p, self.lvdt_v)
-        self.r2 = r2_score(self.position_mm, self.position_mm_est)
-        self.err = self.position_mm_est - self.position_mm
-        self.display_error_analysis(self.lvdt_v, self.position_mm, self.position_mm_est)
+        self.position_est = np.polyval(self.p, self.lvdt_v)
+        self.r2 = r2_score(self.position, self.position_est)
+        self.err = self.position_est - self.position
+        self.display_error_analysis(self.lvdt_v, self.position, self.position_est)
+
+        # Generate .txt file of percent error
+        self.make_percent_err_file(self.position, self.position_est)
 
         # Complete generation of .png file
         self.x = np.linspace(-10, 10, 100)
         self.y = np.polyval(self.p, self.x)
         plt.grid()
         plt.plot(self.x, self.y)
-        plt.plot(self.lvdt_v, self.position_mm, 'o', markersize=4)
+        plt.plot(self.lvdt_v, self.position, 'o', markersize=4)
         plt.title('Position vs. LVDT Voltage')
         plt.xlabel('LVDT analog input voltage (V)')
         plt.ylabel('Motor position (mm)')

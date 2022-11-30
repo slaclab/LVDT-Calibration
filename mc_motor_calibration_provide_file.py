@@ -3,6 +3,8 @@ from pydm import Display, PyDMApplication
 from pydm.widgets import PyDMRelatedDisplayButton
 from qtpy.QtWidgets import QHBoxLayout, QFileDialog, QPushButton
 import subprocess
+import mc_mad_pv_names
+
 
 '''
 This file is in charge of the GUI for the Provide File Screen of the General Motion Calibration Tool.
@@ -96,7 +98,11 @@ class ProvideFileDisplay(Display):
         super(ProvideFileDisplay, self).__init__(parent=parent, args=args, macros=macros)
 
         self.device_long_name = macros.get("P")
+<<<<<<< HEAD:motor_calibration_provide_file.py
         self.device_short_name = devices_long_to_short.get(self.device_long_name)
+=======
+        self.device_short_name = mc_mad_pv_names.devices_pv_name_to_mad.get(self.device_long_name)
+>>>>>>> main:mc_motor_calibration_provide_file.py
         # self.device_short_name = macros.get("MAD")
         # print(self.device_short_name)
         self.TitleLabel.setText(("General Motion Calibration - {}").format(self.device_short_name))
@@ -115,7 +121,7 @@ class ProvideFileDisplay(Display):
         self.fileButton.setStyleSheet("background-color: #9fc3f5")
 
         '''Set up the button that continues to the step size display w/ no selected file '''
-        self.noFileButton = PyDMRelatedDisplayButton(parent=None, filename='motor_calibration_step_size')
+        self.noFileButton = PyDMRelatedDisplayButton(parent=None, filename='mc_motor_calibration_step_size')
         self.noFileButton.setText('Continue with no file')
         self.noFileButton.macros = ['{"MAD":"' + self.device_short_name + '"}']
         self.noFileButton.setStyleSheet("background-color: #9fc3f5")
@@ -126,7 +132,7 @@ class ProvideFileDisplay(Display):
 
     '''When the fileButton is clicked, a subprocess is launched to open main display'''
     def file_provided(self):
-            subprocess.call(['python', '/afs/slac.stanford.edu/u/cd/sarahvo/calibration_workspace/motor_calibration_main_2.py', self.device_short_name, self.filename])
+            subprocess.call(['python', '/afs/slac.stanford.edu/u/cd/sarahvo/calibration_workspace/mc_motor_calibration_main.py', self.device_short_name, self.filename])
 
     def setup_sublayout(self):
         self.sublayout = QHBoxLayout()
@@ -148,11 +154,11 @@ class ProvideFileDisplay(Display):
             print(self.filename)
 
     def ui_filename(self):
-        return 'motor_calibration_provide_file.ui'
+        return 'mc_motor_calibration_provide_file.ui'
     def ui_filepath(self):
         return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
 
 class MainScreen(PyDMApplication):
     def __init__(self, ui_file=None, macros=None):
-        super(MainScreen, self).__init__(ui_file='motor_calibration_provide_file', macros=macros)
+        super(MainScreen, self).__init__(ui_file='mc_motor_calibration_provide_file', macros=macros)
     
