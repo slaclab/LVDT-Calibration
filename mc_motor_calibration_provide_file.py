@@ -49,7 +49,7 @@ class ProvideFileDisplay(Display):
 
     '''When the fileButton is clicked, a subprocess is launched to open main display'''
     def file_provided(self):
-            subprocess.call(['python', '/afs/slac.stanford.edu/u/cd/sarahvo/calibration_workspace/mc_motor_calibration_main.py', self.device_short_name, self.filename])
+            subprocess.call(['python', '/afs/slac/g/lcls/tools/pydm/display/$PYDM/mc/LVDT-Calibration/mc_motor_calibration_main.py', self.device_short_name, self.filename])
 
     def setup_sublayout(self):
         self.sublayout = QHBoxLayout()
