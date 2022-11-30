@@ -28,12 +28,8 @@ from math import sqrt
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt#from colorama import Fore, Back, Style
-<<<<<<< HEAD:motor_calibration_main_2.py
-import meme.names
-
-=======
 import mc_mad_pv_names
->>>>>>> main:mc_motor_calibration_main.py
+
 '''
 This file sets up the GUI for the main display for the General Motion Calibration Tool. It is also responsible for
 the execution of the data collection and data analysis. This file utilizes multithreading in order to properly handle
@@ -45,88 +41,6 @@ information for the program, call one of the prior screens of the 'flow'.*
 *Warning: Pushing 1 to extract all for collimators was deleted from this file and, if to be readded, must also be tested.*
 '''
 
-<<<<<<< HEAD:motor_calibration_main_2.py
-devices_short_to_long = { 
-'UMHTR':'USEG:HTR:650' ,
-'WSDG01':'WIRE:DIAG0:424' ,
-'CEHTR-POSX':'COLL:HTR:615:POSX' ,
-'CEHTR-NEGX':'COLL:HTR:615:NEGX' ,
-'CYC01-NEGY':'COLL:COL0:390:NEGY' ,
-'CYC01-POSY':'COLL:COL0:390:POSY' ,
-'CXC01-NEGX':'COLL:COL0:470:NEGX' ,
-'CXC01-POSX':'COLL:COL0:470:PO# SX' ,
-'CYC03-POSY':'COLL:COL0:710:POSY' ,
-'CYC03-NEGY':'COLL:COL0:710:NEGY' ,
-'CXC03-NEGX':'COLL:COL0:790:NEGX' ,
-'CXC03-POSX':'COLL:COL0:790:POSX' ,
-'CE11B-POSX':'COLL:BC1B:450:POSX' ,
-'CE11B-NEGX':'COLL:BC1B:450:NEGX' ,
-'CYC11-NEGY':'COLL:COL1:390:NEGX' ,
-'CYC11-POSY':'COLL:COL1:390:POSX' ,
-'CXC11-NEGX':'COLL:COL1:470:NEGX' ,
-'CXC11-POSX':'COLL:COL1:470:POSX' ,
-'CYC13-NEGY':'COLL:COL1:710:NEGY' ,
-'CYC13-POSY':'COLL:COL1:710:POSY' ,
-'CXC13-NEGX':'COLL:COL1:790:NEGX' ,
-'CXC13-POSX':'COLL:COL1:790:POSX' ,
-'CE21B-POSX':'COLL:BC2B:535:POSX' ,
-'CE21B-NEGX':'COLL:BC2B:535:NEGX' ,
-'CEDOG-POSY':'COLL:DOG:131:POSY' ,
-'CEDOG-NEGY':'COLL:DOG:131:NEGY' ,
-'CXBP21-NEGX':'COLL:BPN21:424:NEGX' ,
-'CXBP21-POSX':'COLL:BPN21:424:POSX' ,
-'CYBP22-NEGY':'COLL:BPN22:424:NEGY' ,
-'CYBP22-POSY':'COLL:BPN22:424:POSY' ,
-'CXBP25-NEGX':'COLL:BPN25:424:NEGX' ,
-'CXBP25-POSX':'COLL:BPN25:424:POSX' ,
-'CYBP26-NEGY':'COLL:BPN22:424:NEGY' ,
-'CYBP26-POSY':'COLL:BPN22:424:POSY' ,
-'CE24805':'COLL:LI24:805' ,
-'CEDL17-NEGX':'COLL:LTUS:372:NEGX' ,
-'WS24':'WIRE:LI24:705' ,
-'WS10561':'WIRE:IN10:561' ,
-'WS11444':'WIRE:LI11:444' ,
-'CE11334L':'COLL:LI11:334:L' ,
-'CE11334R':'COLL:LI11:334:R' ,
-'WS11614':'WIRE:LI11:614' ,
-'WS11744':'WIRE:LI11:744' ,
-'WS12214':'WIRE:LI12:214' ,
-'CE14802L':'COLL:LI14:802:L' ,
-'CE14802R':'COLL:LI14:802:R' ,
-'WS18944':'WIRE:LI18:944' , 
-'WS19144':'WIRE:LI19:144' , 
-'WS19244':'WIRE:LI19:244' , 
-'WS19344':'WIRE:LI19:344' , 
-'WS11612':'WIRE:LI11:612' , 
-'CX1896L':'COLL:LI19:960:L' ,
-'CX1896R':'COLL:LI18:960:R' ,
-'CY1896T':'COLL:LI18:960:T' ,
-'CY1896B':'COLL:LI18:960:B' ,
-'IPWS1':'WIRE:LI20:3179' ,
-'IPWS2':'WIRE:LI20:3206' ,
-'IPWS3':'WIRE:LI20:3229' ,
-'IPWS4':'WIRE:LI20:3252' ,
-'C202085':'COLL:LI20:2085' ,
-'C202086':'COLL:LI20:2086' ,
-'C202069':'COLL:LI20:2069' ,
-'C202070':'COLL:LI20:2070' ,
-'C202072':'COLL:LI20:2072' ,
-'C202073':'COLL:LI20:2073' ,
-'USOTR':'OTRS:LI20:3158' ,
-'DSOTR':'OTRS:LI20:3206' ,
-'WS04':'WIRE:IN20:741' , 
-'WS11':'WIRE:LI21:285' , 
-'WS12':'WIRE:LI21:293' , 
-'WS13':'WIRE:LI21:301' , 
-'WS24':'WIRE:LI24:705' , 
-'WS644':'WIRE:LI27:644' , 
-'WS144':'WIRE:LI28:144' , 
-'WS444':'WIRE:LI28:444' , 
-'WS744':'WIRE:LI28:744' , 
-}
-
-=======
->>>>>>> main:mc_motor_calibration_main.py
 '''
  Defines the signals available from a running worker thread.
 '''
@@ -178,11 +92,7 @@ class MainWindow(Display):
 
         # Variables to be used throughout UI
         self.device_short_name = macros.get("MAD")
-<<<<<<< HEAD:motor_calibration_main_2.py
-        self.device_name = devices_short_to_long.get(self.device_short_name)
-=======
         self.device_name = mc_mad_pv_names.devices_mad_to_pv_name.get(self.device_short_name)
->>>>>>> main:mc_motor_calibration_main.py
         self.motor_egu = epics.caget(('{}:MOTR.EGU').format(self.device_name))
         self.lvraw_egu = epics.caget(('{}:LVRAW.EGU').format(self.device_name))
         self.motor_twv = epics.caget(('{}:MOTR.TWV').format(self.device_name))
@@ -208,12 +118,6 @@ class MainWindow(Display):
                     pos_or_neg = 'NEG'
                 else: pos_or_neg = 'POS'
                 self.other_motor =     self.device_name[:-4] + pos_or_neg + x_or_y
-<<<<<<< HEAD:motor_calibration_main_2.py
-                self.header_text_1 =  'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. Calibration data is saved in {}. High and Low limits will be saved and restored at the end of data collections.'.format(self.motor_twv, self.motor_egu, self.filename, self.path)
-                self.header_text_2 = 'Save High Limit value: {}\nSave Low Limit value: {}\nPrevious POS motor position: {} {} \nPrevious NEG motor position: {} {}'.format(epics.caget('{}:MOTR.HLM'.format(self.device_name)), epics.caget('{}:MOTR.LLM'.format(self.device_name)), epics.caget('{}:MOTR.RBV'.format(self.device_name)), self.motor_egu, epics.caget('{}:MOTR.RBV'.format(self.other_motor)), self.motor_egu)
-            else:
-                self.header_text_1 = 'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. Calibration data is saved in $PHYSICS_DATA/genMotion/lvdtCal. High and Low limits will be saved and restored at the end of data collections.'.format(self.motor_twv, self.motor_egu, self.filename)
-=======
                 self.header_text_1 =  'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. \
                     Calibration data is saved in {}. High and Low limits will be saved and restored at the end of data collections.'\
                         .format(self.motor_twv, self.motor_egu, self.filename, self.path)
@@ -225,7 +129,6 @@ class MainWindow(Display):
                 self.header_text_1 = 'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. \
                     Calibration data is saved in $PHYSICS_DATA/genMotion/lvdtCal. High and Low limits will be saved and restored \
                         at the end of data collections.'.format(self.motor_twv, self.motor_egu, self.filename)
->>>>>>> main:mc_motor_calibration_main.py
                 self.header_text_2 = 'Save High Limit value: {} \nSave Low Limit value: {}\nPrevious motor position: {} {}'.format(epics.caget('{}:MOTR.HLM'.format(self.device_name)), epics.caget('{}:MOTR.LLM'.format(self.device_name)), epics.caget('{}:MOTR.RBV'.format(self.device_name)), self.motor_egu)
 
         # Intialize the main status label
