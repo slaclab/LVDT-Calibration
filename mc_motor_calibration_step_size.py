@@ -1,9 +1,10 @@
 from os import path
 from pydm import Display, PyDMApplication
-import calibrate_motor_lvdt_modified
+# import calibrate_motor_lvdt_modified
 import epics
 from qtpy.QtWidgets import QPushButton
 import subprocess
+import mc_mad_pv_names
 
 '''
 This file is in charge of the GUI for the Step Size Screen of the General Motion Calibration Tool. In order to execute
@@ -16,7 +17,7 @@ class ProvideStepSizeDisplay(Display):
         super(ProvideStepSizeDisplay, self).__init__(parent=parent, args=args, macros=macros)
 
         self.device_short_name = macros.get("MAD")
-        self.device_name = calibrate_motor_lvdt_modified.devices.get(macros.get("MAD"))
+        self.device_name = mc_mad_pv_names.devices_mad_to_pv_name.get(macros.get("MAD"))
         self.egu = ''.join((self.device_name, ':MOTR.EGU'))
 
         '''Connect Spin Box to MOTR.TWV channel'''
@@ -37,14 +38,14 @@ class ProvideStepSizeDisplay(Display):
 
     '''When button is pressed, subprocess is launched to open main screen'''
     def next_display(self): 
-        subprocess.call(['python', '/afs/slac.stanford.edu/u/cd/sarahvo/calibration_workspace/motor_calibration_main_2.py', self.device_short_name])
+        subprocess.call(['python', '/afs/slac.stanford.edu/u/cd/sarahvo/calibration_workspace/mc_motor_calibration_main.py', self.device_short_name])
 
     def ui_filename(self):
-        return 'motor_calibration_step_size.ui'
+        return 'mc_motor_calibration_step_size.ui'
         
     def ui_filepath(self):
         return path.join(path.dirname(path.realpath(__file__)), self.ui_filename())
 
 class MainScreen(PyDMApplication):
     def __init__(self, ui_file=None, macros=None):
-        super(MainScreen, self).__init__(ui_file='motor_calibration_main_2.py', macros=macros)
+        super(MainScreen, self).__init__(ui_file='mc_motor_calibration_main.py', macros=macros)
