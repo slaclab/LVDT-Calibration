@@ -40,7 +40,6 @@ class ProvideFileDisplay(Display):
         '''Set up the button that continues to the step size display w/ no selected file '''
         self.noFileButton = PyDMRelatedDisplayButton(parent=None, filename='mc_motor_calibration_step_size')
         self.noFileButton.setText('Continue with no file')
-        print('ssdsadfsadsadsa', self.device_short_name)
         self.noFileButton.macros = ['{"MAD":"' + self.device_short_name + '"}']
         self.noFileButton.setStyleSheet("background-color: #9fc3f5")
 
