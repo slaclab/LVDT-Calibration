@@ -90,8 +90,8 @@ class MainWindow(Display):
         self.path = '$PHYSICS_DATA/genMotion/lvdtCal' # During testing, this was /u/gu/allyc/work/project. Should be $PHYSICS_DATA/genMotion/lvdtCal or whatever user wants it to be
 
         # Variables to be used throughout UI
-        self.device_short_name = macros.get("MAD")
-        self.device_name = mc_mad_pv_names.devices_mad_to_pv_name.get(self.device_short_name)
+        self.mad_name = macros.get("MAD")
+        self.device_name = mc_mad_pv_names.devices_mad_to_pv_name.get(self.mad_name)
         self.motor_egu = epics.caget(('{}:MOTR.EGU').format(self.device_name))
         self.lvraw_egu = epics.caget(('{}:LVRAW.EGU').format(self.device_name))
         self.motor_twv = epics.caget(('{}:MOTR.TWV').format(self.device_name))
@@ -107,7 +107,7 @@ class MainWindow(Display):
             self.header_text_1 = "File {} provided. Press 'Start Data Analysis' button to continue".format(self.filename)
             self.header_text_2 = " "
         else:
-            self.filename = '{}_{}.csv'.format(self.device_name, self.timestamp)
+            self.filename = '{}_{}.csv'.format(self.mad_name, self.timestamp)
             self.csv_file = os.path.join(self.path, self.filename)
             # Handle the case that device is a collimator and display must show both positive and negative motors
             if ((self.device_name)[:4] == 'COLL'):
@@ -332,7 +332,7 @@ class MainWindow(Display):
     '''Push the current coefficients to EPICS and save the old coefficients to a .txt file.
     This function is only called when push_coefs_button is clicked. '''
     def push_cur_coefs(self, label):
-        self.old_coef_file = '{}_{}_OLD.txt'.format(self.device_name, self.timestamp)
+        self.old_coef_file = '{}_{}_OLD.txt'.format(self.mad_name, self.timestamp)
         self.old_coef_file = os.path.join(self.path, self.old_coef_file)
         label.setText("The current coefficients have been pushed. Saving old coefficients to {}.".format(self.old_coef_file))
         self.old_coefs = self.get_prev_coefs()
@@ -358,8 +358,8 @@ class MainWindow(Display):
 
     '''Function which generates .txt file to store percent error on the position'''
     def make_percent_err_file(self, pos, pos_est):
-        self.percent_err_file = '{}_{}_percent_error.txt'.format(self.device_name, self.timestamp)
-        self.percent_err_file = os.path.join(self.path, self.old_coef_file)
+        self.percent_err_file = '{}_{}_percent_error.txt'.format(self.mad_name, self.timestamp)
+        self.percent_err_file = os.path.join(self.path, self.percent_err_file)
 
         with open(self.percent_err_file, 'w') as f:
             self.first_line = "Est. position, Act. position, Percent Error\n"
@@ -368,7 +368,7 @@ class MainWindow(Display):
             self.lines = []
             for i in range(len(pos)):
                 self.cur_percent_err = ((pos_est[i] - pos[i])/pos[i]) * 100
-                self.cur_line= str(pos_est[i], pos[i], self.cur_percent_err)
+                self.cur_line= str((pos_est[i], pos[i], self.cur_percent_err))
                 self.lines.append(self.cur_line)
             f.writelines('\n'.join(self.lines))
         f.close()
@@ -440,7 +440,7 @@ class MainWindow(Display):
     '''Function that performs data analysis and updates display. Called after data anlysis button is pressed.'''
     def data_analysis(self):
         # Initalize a .png of best fit line and data points
-        self.output_fig = '{}_{}.png'.format(self.device_name,self.timestamp)
+        self.output_fig = '{}_{}.png'.format(self.mad_name,self.timestamp)
         self.output_fig = os.path.join(self.path, self.output_fig)
 
         # Gather data from .csv file
@@ -467,7 +467,7 @@ class MainWindow(Display):
         self.p, self.rmse = fit(self.lvdt_v, self.position, self.lvdt_v, self.position, self.best_deg)
         
         # Generate a .txt file of the new coefficients
-        self.coef_file = '{}_{}.txt'.format(self.device_name, self.timestamp)
+        self.coef_file = '{}_{}.txt'.format(self.mad_name, self.timestamp)
         self.coef_file = os.path.join(self.path, self.coef_file)
         self.cur_coefs = []
         with open(self.coef_file, 'w') as f:
