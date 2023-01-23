@@ -23,9 +23,8 @@ class ProvideStepSizeDisplay(Display):
         '''Connect Spin Box to MOTR.TWV channel'''
         self.PyDMSpinbox.channel = "ca://{}:MOTR.TWV".format(self.device_name)
 
-
         self.TitleLabel.setText(("General Motion Calibration - {}").format(macros.get("MAD")))
-        self.PyDMLabel.setText(("Provide a step size in {}. To proceed, hit enter and then click next.").format(epics.caget('{}'.format(self.egu))))
+        self.PyDMLabel.setText(("Provide a step size in {}. To proceed, you must first hit ENTER on the keyboard and then click NEXT.").format(epics.caget('{}'.format(self.egu))))
         
         self.macros_string = '{"MAD":"' + macros.get("MAD") + '"}'
 

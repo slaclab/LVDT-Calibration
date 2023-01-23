@@ -29,6 +29,8 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt#from colorama import Fore, Back, Style
 import mc_mad_pv_names
+
+import  meme.names
 '''
 This file sets up the GUI for the main display for the General Motion Calibration Tool. It is also responsible for
 the execution of the data collection and data analysis. This file utilizes multithreading in order to properly handle
@@ -91,6 +93,7 @@ class MainWindow(Display):
 
         # Variables to be used throughout UI
         self.mad_name = macros.get("MAD")
+        # self.device_name = meme.names.element_to_device(self.mad_name)
         self.device_name = mc_mad_pv_names.devices_mad_to_pv_name.get(self.mad_name)
         self.motor_egu = epics.caget(('{}:MOTR.EGU').format(self.device_name))
         self.lvraw_egu = epics.caget(('{}:LVRAW.EGU').format(self.device_name))
@@ -111,19 +114,21 @@ class MainWindow(Display):
             self.csv_file = os.path.join(self.path, self.filename)
             # Handle the case that device is a collimator and display must show both positive and negative motors
             if ((self.device_name)[:4] == 'COLL'):
-                x_or_y = self.device_name[-1]
-                pos_or_neg = ''
-                if (self.device_name[-4:-1] == 'POS'):
-                    pos_or_neg = 'NEG'
-                else: pos_or_neg = 'POS'
-                self.other_motor =     self.device_name[:-4] + pos_or_neg + x_or_y
-                self.header_text_1 =  'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. \
-                    Calibration data is saved in {}. High and Low limits will be saved and restored at the end of data collections.'\
-                        .format(self.motor_twv, self.motor_egu, self.filename, self.path)
-                self.header_text_2 = 'Save High Limit value: {}\nSave Low Limit value: {}\nPrevious POS motor position: {} {}\
-                     \nPrevious NEG motor position: {} {}'.format(epics.caget('{}:MOTR.HLM'.format(self.device_name)), \
-                     epics.caget('{}:MOTR.LLM'.format(self.device_name)), epics.caget('{}:MOTR.RBV'.format(self.device_name)), \
-                        self.motor_egu, epics.caget('{}:MOTR.RBV'.format(self.other_motor)), self.motor_egu)
+                self.cur_jaw =  self.device_name[-4:-1]
+                self.opposite_jaw = ''
+                if (self.cur_jaw == 'POS'):
+                    self.pos_motor = self.device_name
+                    self.neg_motor = self.device_name[:-4] + 'NEG' + self.device_name[-1]
+                else:
+                    self.neg_motor = self.device_name
+                    self.pos_motor = self.device_name[:-4] + 'NEG' + self.device_name[-1]
+                self.header_text_1 =  'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. Calibration data is saved in {}. High and Low limits will be saved and restored at the end of data collections.'\
+                    .format(self.motor_twv, self.motor_egu, self.filename, self.path)
+                if (self.cur_jaw == 'POS'):
+                    self.header_text_2 = 'Save High Limit value: {} {}\nSave Low Limit value: {} {}\nPrevious POS motor position: {} {}\
+                     \nPrevious NEG motor position: {} {}'.format(epics.caget('{}:MOTR.HLM'.format(self.device_name)), self.motor_egu, \
+                     epics.caget('{}:MOTR.LLM'.format(self.device_name)), self.motor_egu, epics.caget('{}:MOTR.RBV'.format(self.pos_motor)), \
+                        self.motor_egu, epics.caget('{}:MOTR.RBV'.format(self.neg_motor)), self.motor_egu)
             else:
                 self.header_text_1 = 'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. \
                     Calibration data is saved in $PHYSICS_DATA/genMotion/lvdtCal. High and Low limits will be saved and restored \
@@ -413,8 +418,13 @@ class MainWindow(Display):
         # progress_callback.emit('Moving To High Limit.')
         self.main_status.setText('Moving To High Limit before Data Collection.')
         self.moveToHILimit()
+        if ((self.device_name)[:4] == 'COLL'):
+            self.main_status.setText('{} jaw at High Limit. Moving other jaw to Outer Limit.'.format(self.cur_jaw))
+            self.moveOtherMotor()
+            self.main_status.setText('Other jaw at Outer Limit. Beginning Data Collection.')
         # progress_callback.emit('At High Limit.')
-        self.main_status.setText('At High Limit. Beginning Data Collection.')
+        else:
+            self.main_status.setText('At High Limit. Beginning Data Collection.')
         self.prev_hlm = epics.caget(self.motor_hlm) 
         self.prev_llm = epics.caget(self.motor_llm) 
               # New Limits
@@ -435,6 +445,7 @@ class MainWindow(Display):
         f.close()
         epics.caput('{}'.format(self.motor_hlm), self.prev_hlm)
         epics.caput('{}'.format(self.motor_llm), self.prev_llm)
+        
 
     
     '''Function that performs data analysis and updates display. Called after data anlysis button is pressed.'''
@@ -535,8 +546,20 @@ class MainWindow(Display):
         while ((epics.caget(motordmov))==0):
             continue
         if (epics.caget(motordmov) == 1):
-            print('Done. At High Limit. Pause.')
-            # time.sleep(5)
+            print('Done. At High Limit. Pause.')    
+    
+    '''Handles if the device is a collimator--in such case, the other motor must be moved to its outer limit before calibration '''
+    def moveOtherMotor(self):
+        if (self.cur_jaw == "POS"):
+            moveToOuterLimit = ''.join((self.other,':MOTRLO')) 
+        else:
+            moveToOuterLimit = ''.join((self.other,':MOTRHI'))
+        motordmov       = ''.join((self.device_name, ':MOTR.DMOV'))
+        epics.caput('{}'.format(moveToOuterLimit), 1)
+        while ((epics.caget(motordmov))==0):
+            continue
+        if (epics.caget(motordmov) == 1):
+            print('Done. Other jaw moved to outer limit. Pause.')  
 
     def lowLimitCheck(self, writer):
         '''Checks if motor hit low limit       
@@ -548,8 +571,7 @@ class MainWindow(Display):
 
         while ((epics.caget(lowlimit_status)) == 0):
             epics.caput('{}'.format(motortwr), 1)
-            print("yes")
-            time.sleep(.25)
+            time.sleep(3)
             if (epics.caget(motordmov) == 0):
                 while ((epics.caget(motordmov))==0):
                     # epics.caput('{}'.format(motortwr), 1)
@@ -600,7 +622,6 @@ class MainWindow(Display):
                 rows = [LVRAW,RBV]
                 print(rows)
                 writer.writerow(rows)
-                # time.sleep(1)
 
     def highLimitCheck(self, writer):
         '''Checks if motor hit high limit       
@@ -612,8 +633,7 @@ class MainWindow(Display):
 
         while ((epics.caget(highlimit_status)) == 0):
             epics.caput('{}'.format(motortwf), 1)
-            print("yes")
-            time.sleep(.25)
+            time.sleep(3)
             if (epics.caget(motordmov) == 0):
                 while ((epics.caget(motordmov))==0):
                     # epics.caput('{}'.format(motortwr), 1)
@@ -631,9 +651,6 @@ class MainWindow(Display):
                     writer.writerow(rows)
                     # time.sleep(1)
 
-            # self.moveReverse(writer)
-            # print("moveReverse starting")
-            # time.sleep(3)
         print('Device on High Limit. ')
 
     def moveForward(self, writer):
