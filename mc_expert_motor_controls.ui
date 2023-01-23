@@ -3736,16 +3736,31 @@ Factor</string>
               </property>
               <property name="filenames" stdset="0">
                <stringlist>
-                <string>motor_calibration_provide_file.py</string>
+                <string>$PYDM/mc/LVDT-Calibration/mc_motor_calibration_provide_file.py</string>
                </stringlist>
+              </property>
+              <property name="titles" stdset="0">
+               <stringlist/>
+              </property>
+              <property name="showIcon" stdset="0">
+               <bool>true</bool>
               </property>
               <property name="macros" stdset="0">
                <stringlist>
-                <string>{&quot;P&quot;:&quot;${P}&quot;}</string>
+                <string>{}</string>
                </stringlist>
               </property>
               <property name="openInNewWindow" stdset="0">
                <bool>true</bool>
+              </property>
+              <property name="passwordProtected" stdset="0">
+               <bool>false</bool>
+              </property>
+              <property name="password" stdset="0">
+               <string/>
+              </property>
+              <property name="protectedPassword" stdset="0">
+               <string/>
               </property>
              </widget>
             </item>
