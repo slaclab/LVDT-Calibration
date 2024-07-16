@@ -35,7 +35,7 @@ import  meme.names
 This file sets up the GUI for the main display for the General Motion Calibration Tool. It is also responsible for
 the execution of the data collection and data analysis. This file utilizes multithreading in order to properly handle
 real time GUI updates during motor movement. To execute this screen on its own, enter the terminal command
-'python motor_calibration_main_2.py [MAD]', where [MAD] is the device's name (one of the short names on the left side
+'python mc_motor_calibration_main.py [MAD]', where [MAD] is the device's name (one of the short names on the left side
 of the devices list below). 
 *Warning: Execution of this screen alone does not allow you to provide a .csv file or step size. In order to provide such
 information for the program, call one of the prior screens of the 'flow'.*
@@ -89,7 +89,7 @@ class MainWindow(Display):
         super(MainWindow, self).__init__(parent=parent, args=args, macros=macros)
 
         # [EDIT FOR YOUR PERSONAL CONFIGURATIONS] Global Variable that holds the directory where data is to be saved
-        self.path = '$PHYSICS_DATA/genMotion/lvdtCal' # During testing, this was /u/gu/allyc/work/project. Should be $PHYSICS_DATA/genMotion/lvdtCal or whatever user wants it to be
+        self.path = '/u/cd/awomack/pja/files' # During testing, this was /u/gu/allyc/work/project. Should be $PHYSICS_DATA/genMotion/lvdtCal or whatever user wants it to be
 
         # Variables to be used throughout UI
         self.mad_name = macros.get("MAD")
@@ -215,7 +215,8 @@ class MainWindow(Display):
     def setup_header(self):
         self.header_label_1 = self.create_label(self.frame_layout, self.header_text_1, True)
         self.header_label_1.setWordWrap(True)
-        self.header_label_2 = self.create_label(self.frame_layout, self.header_text_2)
+        self.header_label_2 = self.create_label(self.frame_layout, self.header_text_2, True)
+        self.header_label_2.setWordWrap(True)
 
     '''Set up labels that show the status of data collection, MoVAL, LVRAW, and RBV'''
     def setup_statuses(self):
