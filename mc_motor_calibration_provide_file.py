@@ -1,4 +1,4 @@
-from os import path
+from os import path, environ
 from pydm import Display, PyDMApplication
 from pydm.widgets import PyDMRelatedDisplayButton
 from qtpy.QtWidgets import QHBoxLayout, QFileDialog, QPushButton
@@ -18,12 +18,12 @@ class ProvideFileDisplay(Display):
     def __init__(self, parent=None, args=None, macros=None):
         super(ProvideFileDisplay, self).__init__(parent=parent, args=args, macros=macros)
 
-        self.device_long_name = macros.get("P")
-        self.device_short_name = mc_mad_pv_names.devices_pv_name_to_mad.get(self.device_long_name)
-        # self.device_short_name = macros.get("MAD")
-        # print(self.device_short_name)
-        self.TitleLabel.setText(("General Motion Calibration - {}").format(self.device_short_name))
-        self.ui.HeaderLabel.setText('Find a .csv file with calibration data or continue with no file.\nFile currently selected: None')
+        #self.device_long_name = macros.get("P")
+        #self.device_short_name = mc_mad_pv_names.devices_pv_name_to_mad.get(self.device_long_name)
+        self.device_short_name = macros.get("MAD")
+        print(self.device_short_name)
+        self.TitleLabel.setText(("General Motion LVDT Calibration - {}").format(self.device_short_name))
+        self.ui.HeaderLabel.setText('Find a .csv file with calibration data or continue with no file.\nIF no file is selected, motor will be moved through its range at selected intervals and data from motor and LVDT will be collected and a polynomial fit will be generated.\nFile currently selected: None')
 
         '''Set up the button that opens a QFileDIalog'''
         self.findFileButton = QPushButton()
@@ -49,7 +49,8 @@ class ProvideFileDisplay(Display):
 
     '''When the fileButton is clicked, a subprocess is launched to open main display'''
     def file_provided(self):
-            subprocess.call(['python', '/usr/local/lcls/tools/pydm/display/mc/LVDT-Calibration/mc_motor_calibration_main.py', self.device_short_name, self.filename])
+        self.next_file = environ.get("TOOLS") + "/script/mc_lvdt_calibration/mc_motor_calibration_main.py" 
+        subprocess.call(['python', self.next_file, self.device_short_name, self.filename])
 
     def setup_sublayout(self):
         self.sublayout = QHBoxLayout()

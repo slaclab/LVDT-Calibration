@@ -1,4 +1,4 @@
-from os import path
+from os import path, environ
 from pydm import Display, PyDMApplication
 # import calibrate_motor_lvdt_modified
 import epics
@@ -24,7 +24,7 @@ class ProvideStepSizeDisplay(Display):
         self.PyDMSpinbox.channel = "ca://{}:MOTR.TWV".format(self.device_name)
 
         self.TitleLabel.setText(("General Motion Calibration - {}").format(macros.get("MAD")))
-        self.PyDMLabel.setText(("Provide a step size in {}. To proceed, you must first hit ENTER on the keyboard and then click NEXT.").format(epics.caget('{}'.format(self.egu))))
+        self.PyDMLabel.setText(("Provide a step size in {}. This will be the interval at which data will be collected.\nTo proceed, you must first press ENTER on the keyboard and then click NEXT.").format(epics.caget('{}'.format(self.egu))))
         
         self.macros_string = '{"MAD":"' + macros.get("MAD") + '"}'
 
@@ -36,8 +36,9 @@ class ProvideStepSizeDisplay(Display):
         self.ui.horizontalLayout.addWidget(self.next_button)
 
     '''When button is pressed, subprocess is launched to open main screen'''
-    def next_display(self): 
-        subprocess.call(['python', '/usr/local/lcls/tools/pydm/display/mc/LVDT-Calibration/mc_motor_calibration_main.py', self.device_short_name])
+    def next_display(self):
+        self.next_file = environ.get("TOOLS") + "/script/mc_lvdt_calibration/mc_motor_calibration_main.py" 
+        subprocess.call(['python', self.next_file , self.device_short_name])
 
     def ui_filename(self):
         return 'mc_motor_calibration_step_size.ui'

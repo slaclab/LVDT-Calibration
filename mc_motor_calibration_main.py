@@ -107,7 +107,7 @@ class MainWindow(Display):
         if ("FILENAME" in macros):
             self.filename = macros.get("FILENAME")
             self.csv_file = open(self.filename)
-            self.header_text_1 = "File {} provided. Press 'Start Data Analysis' button to continue".format(self.filename)
+            self.header_text_1 = "File {} provided. Skip Data Collection and press 'Start Data Analysis' button to continue".format(self.filename)
             self.header_text_2 = " "
         else:
             self.filename = '{}_{}.csv'.format(self.mad_name, self.timestamp)
@@ -194,7 +194,7 @@ class MainWindow(Display):
     '''Setup the general title shared between all three screens'''
     def setup_title(self):
         self.title = PyDMLabel()
-        title_text = 'General Motion Calibration - {}'.format(macros.get("MAD"))
+        title_text = 'General Motion LVDT Calibration - {}'.format(macros.get("MAD"))
         self.title.setText(title_text)
         
         self.title.setStyleSheet("QLabel {\n"
