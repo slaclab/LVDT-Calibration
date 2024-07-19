@@ -119,9 +119,11 @@ class MainWindow(Display):
                 if (self.cur_jaw == 'POS'):
                     self.pos_motor = self.device_name
                     self.neg_motor = self.device_name[:-4] + 'NEG' + self.device_name[-1]
+		    self.opposite_jaw = self.neg_motor
                 else:
                     self.neg_motor = self.device_name
                     self.pos_motor = self.device_name[:-4] + 'NEG' + self.device_name[-1]
+		    self.opposite_jaw = self.pos_motor
                 self.header_text_1 =  'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. Calibration data is saved in {}. High and Low limits will be saved and restored at the end of data collections.'\
                     .format(self.motor_twv, self.motor_egu, self.filename, self.path)
                 if (self.cur_jaw == 'POS'):
@@ -292,6 +294,14 @@ class MainWindow(Display):
         self.coefs_frame.addWidget(self.push_coefs_button)
         self.sublayout.addLayout(self.coefs_frame)
 
+	# Print the current font size
+	font = self.coefs_label.font()
+	print(f"Current font size: {font.pointSize()}")
+
+	# Set font size
+	custom_font = QFont()
+	custom_font.setWeight(10);
+	Qapplication.setFont(custom_font, "QLabel")
 
     '''Set up the error analysis table that shows for each point, LVDT voltage, estimated posiiton, actual position, and error'''
     def setup_default_err(self):
@@ -552,9 +562,9 @@ class MainWindow(Display):
     '''Handles if the device is a collimator--in such case, the other motor must be moved to its outer limit before calibration '''
     def moveOtherMotor(self):
         if (self.cur_jaw == "POS"):
-            moveToOuterLimit = ''.join((self.other,':MOTRLO')) 
+            moveToOuterLimit = ''.join((self.opposite,':MOTRLO')) 
         else:
-            moveToOuterLimit = ''.join((self.other,':MOTRHI'))
+            moveToOuterLimit = ''.join((self.opposite,':MOTRHI'))
         motordmov       = ''.join((self.device_name, ':MOTR.DMOV'))
         epics.caput('{}'.format(moveToOuterLimit), 1)
         while ((epics.caget(motordmov))==0):
