@@ -120,11 +120,11 @@ class MainWindow(Display):
                 if (self.cur_jaw == 'POS'):
                     self.pos_motor = self.device_name
                     self.neg_motor = self.device_name[:-4] + 'NEG' + self.device_name[-1]
-		    self.opposite_jaw = self.neg_motor
+                    self.opposite_jaw = self.neg_motor
                 else:
                     self.neg_motor = self.device_name
                     self.pos_motor = self.device_name[:-4] + 'NEG' + self.device_name[-1]
-		    self.opposite_jaw = self.pos_motor
+                    self.opposite_jaw = self.pos_motor
                 self.header_text_1 =  'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. Calibration data is saved in {}. High and Low limits will be saved and restored at the end of data collections.'\
                     .format(self.motor_twv, self.motor_egu, self.filename, self.path)
 
