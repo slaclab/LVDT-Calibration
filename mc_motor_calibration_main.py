@@ -294,15 +294,6 @@ class MainWindow(Display):
         self.coefs_frame.addWidget(self.push_coefs_button)
         self.sublayout.addLayout(self.coefs_frame)
 
-	# Print the current font size
-	font = self.coefs_label.font()
-	print(f"Current font size: {font.pointSize()}")
-
-	# Set font size
-	custom_font = QFont()
-	custom_font.setWeight(10);
-	Qapplication.setFont(custom_font, "QLabel")
-
     '''Set up the error analysis table that shows for each point, LVDT voltage, estimated posiiton, actual position, and error'''
     def setup_default_err(self):
         self.err_frame = QVBoxLayout()
