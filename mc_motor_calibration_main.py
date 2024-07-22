@@ -103,13 +103,13 @@ class MainWindow(Display):
         self.motor_llm =''.join((self.device_name, ':MOTR.LLM'))
         self.filename = macros.get("FILENAME")
         self.timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        self.header_text_1 = " "
+        self.header_text_2 = " "
 
         # Set up header according to whether or not data collection will occur
         if ("FILENAME" in macros):
             self.filename = macros.get("FILENAME")
             self.csv_file = open(self.filename)
-            self.header_text_1 = " "
-            self.header_text_2 = " "
         else:
             self.filename = '{}_{}.csv'.format(self.mad_name, self.timestamp)
             self.csv_file = os.path.join(self.path, self.filename)
