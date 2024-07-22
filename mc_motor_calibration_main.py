@@ -107,7 +107,7 @@ class MainWindow(Display):
         if ("FILENAME" in macros):
             self.filename = macros.get("FILENAME")
             self.csv_file = open(self.filename)
-            self.header_text_1 = "File {} provided. Skip Data Collection and press 'Start Data Analysis' button to continue".format(self.filename)
+            self.header_text_1 = " "
             self.header_text_2 = " "
         else:
             self.filename = '{}_{}.csv'.format(self.mad_name, self.timestamp)
