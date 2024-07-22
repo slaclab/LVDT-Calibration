@@ -29,6 +29,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt#from colorama import Fore, Back, Style
 import mc_mad_pv_names
+import mc_device_list
 
 import  meme.names
 '''
@@ -414,17 +415,18 @@ class MainWindow(Display):
         self.faultack = ''.join((self.device_name, ':FAULTACK.PROC'))
         epics.caput('{}'.format(self.faultack), 1)
         # progress_callback.emit('Moving To High Limit.')
-        self.main_status.setText('Moving To High Limit before Data Collection.')
-        self.moveToHILimit()
+        self.main_status.setText('Saving current limits.')
+        self.prev_hlm = epics.caget(self.motor_hlm) 
+        self.prev_llm = epics.caget(self.motor_llm)  
         if ((self.device_name)[:4] == 'COLL'):
-            self.main_status.setText('{} jaw at High Limit. Moving other jaw to Outer Limit.'.format(self.cur_jaw))
-            self.moveOtherMotor()
-            self.main_status.setText('Other jaw at Outer Limit. Beginning Data Collection.')
+            self.main_status.setText('Device is a Collimator. Fully open both jaws before data collection.')
+            self.collimatorExtract()
+            self.main_status.setText('Both jaws at Outer Limit. Beginning Data Collection.')
         # progress_callback.emit('At High Limit.')
         else:
+            self.main_status.setText('Moving to High Limit before data collection.')
+            self.moveToHILimit()
             self.main_status.setText('At High Limit. Beginning Data Collection.')
-        self.prev_hlm = epics.caget(self.motor_hlm) 
-        self.prev_llm = epics.caget(self.motor_llm) 
               # New Limits
         epics.caput('{}'.format(self.motor_hlm), 0)
         epics.caput('{}'.format(self.motor_llm), 0)
@@ -533,6 +535,19 @@ class MainWindow(Display):
 
     '''--- The functions below handle how to make the motor move in tweak steps and gather data at every tweak value.
     Futhermore, the functions handle the statistical math that goes behind finding the best fit polynomial.---'''
+
+    def collimatorExtract(self):
+    
+        '''Extracts a collimator. i.e. Fully opens the jaws '''
+        self.collimator_name = mc_device_list.get_coll_name(self.mad_name)
+        collExtract    = ''.join((self.collimator_name, ':EXTRACT'))
+        colldmov       = ''.join((self.collimator_name, ':DONEMOVING'))
+
+        epics.caput('{}'.format(collExtract), 1)
+        while ((epics.caget(colldmov))==0):
+            continue
+        if (epics.caget(colldmov) == 1): 
+            print('Done. Jaws extracted to fully open position. Pause.')
 
     def moveToHILimit(self):
         '''Moves motor to high limit before starting data
