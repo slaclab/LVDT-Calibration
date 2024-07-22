@@ -549,9 +549,9 @@ class MainWindow(Display):
     '''Handles if the device is a collimator--in such case, the other motor must be moved to its outer limit before calibration '''
     def moveOtherMotor(self):
         if (self.cur_jaw == "POS"):
-            moveToOuterLimit = ''.join((self.opposite,':MOTRLO')) 
+            moveToOuterLimit = ''.join((self.opposite_jaw,':MOTRLO')) 
         else:
-            moveToOuterLimit = ''.join((self.opposite,':MOTRHI'))
+            moveToOuterLimit = ''.join((self.opposite_jaw,':MOTRHI'))
         motordmov       = ''.join((self.device_name, ':MOTR.DMOV'))
         epics.caput('{}'.format(moveToOuterLimit), 1)
         while ((epics.caget(motordmov))==0):
