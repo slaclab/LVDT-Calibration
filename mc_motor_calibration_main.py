@@ -136,13 +136,13 @@ class MainWindow(Display):
         self.main_status = QLabel("Data collection has not begun yet.")
 
         # Initalize the button that starts data collection
-        self.collection_button = QPushButton("Start Data Collection.")
+        self.collection_button = QPushButton("Start Data Collection")
         self.collection_button.setStyleSheet("background-color: #9fc3f5")
         self.collection_button.pressed.connect(self.data_collection)
 
         # Initialize the button that starts data analysis
         self.analysis_button = QPushButton()
-        self.analysis_button.setText("Start Data Analysis.")
+        self.analysis_button.setText("Start Data Analysis")
         self.analysis_button.setStyleSheet("background-color: #9fc3f5")
         self.analysis_button.clicked.connect(lambda: self.data_analysis())
 
