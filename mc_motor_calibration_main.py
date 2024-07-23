@@ -543,6 +543,7 @@ class MainWindow(Display):
         colldmov       = ''.join((self.collimator_name, ':DONEMOVING'))
 
         epics.caput('{}'.format(collExtract), 1)
+        time.sleep(5)
         while ((epics.caget(colldmov))==0):
             continue
         if (epics.caget(colldmov) == 1): 
