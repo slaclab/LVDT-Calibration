@@ -129,9 +129,7 @@ class MainWindow(Display):
                     .format(self.motor_twv, self.motor_egu, self.filename, self.path)
 
             else:
-                self.header_text_1 = 'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. \
-                    Calibration data is saved in $PHYSICS_DATA/genMotion/lvdtCal. High and Low limits will be saved and restored \
-                        at the end of data collections.'.format(self.motor_twv, self.motor_egu, self.filename)
+                self.header_text_1 = 'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. Calibration data is saved in $PHYSICS_DATA/genMotion/lvdtCal. High and Low limits will be saved and restored at the end of data collections.'.format(self.motor_twv, self.motor_egu, self.filename)
                 self.header_text_2 = 'Save High Limit value: {} \nSave Low Limit value: {}\nPrevious motor position: {} {}'.format(epics.caget('{}:MOTR.HLM'.format(self.device_name)), epics.caget('{}:MOTR.LLM'.format(self.device_name)), epics.caget('{}:MOTR.RBV'.format(self.device_name)), self.motor_egu)
 
         # Intialize the main status label
@@ -263,7 +261,6 @@ class MainWindow(Display):
     def setup_degrees(self):
         self.degrees_frame = QVBoxLayout()
         self.degrees_label = QLabel('LOOCV on polynomials w/ different degrees:')
-        self.degrees_label.setStyleSheet("background-color: #e3e3e3)
         self.degrees_frame.addWidget(self.degrees_label)
         self.degrees_table = self.create_table(8, 1, self.degrees_frame)
         vert_header = ['Degree 0', 'Degree 1', 'Degree 2', 'Degree 3', 'Degree 4', 'Degree 5', 'Degree 6', 'Degree 7']
