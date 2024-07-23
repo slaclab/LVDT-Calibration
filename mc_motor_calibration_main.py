@@ -298,7 +298,7 @@ class MainWindow(Display):
         # self.err_label.setFont(self.bold)
         self.err_frame.addWidget(self.err_label)
         self.err_frame.addWidget(self.err_table)
-        err_hori_headers = ['LVDT volt. ({})'.format(self.lvraw_egu), 'Est. position ({})'.format(self.motor_egu), 'Act. position ({})'.format(self.motor_egu), 'Error ({})'.format(self.motor_egu)]
+        err_hori_headers = ['LVDT ({})'.format(self.lvraw_egu), 'Est. position ({})'.format(self.motor_egu), 'Act. position ({})'.format(self.motor_egu), 'Error ({})'.format(self.motor_egu)]
         self.err_table.setHorizontalHeaderLabels(err_hori_headers)
         self.frame_layout.addLayout(self.err_frame)
 
