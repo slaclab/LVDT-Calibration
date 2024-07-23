@@ -263,6 +263,7 @@ class MainWindow(Display):
     def setup_degrees(self):
         self.degrees_frame = QVBoxLayout()
         self.degrees_label = QLabel('LOOCV on polynomials w/ different degrees:')
+        self.degrees_label.setStyleSheet("background-color: #e3e3e3)
         self.degrees_frame.addWidget(self.degrees_label)
         self.degrees_table = self.create_table(8, 1, self.degrees_frame)
         vert_header = ['Degree 0', 'Degree 1', 'Degree 2', 'Degree 3', 'Degree 4', 'Degree 5', 'Degree 6', 'Degree 7']
