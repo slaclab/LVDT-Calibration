@@ -440,7 +440,7 @@ class MainWindow(Display):
             self.main_status.setText("Moving To High Limit.")
             epics.caput('{}'.format(self.faultack), 1)
             self.highLimitCheck(self.writer)
-            self.main_status.setText("At High Limit. Data collection complete.")
+            self.main_status.setText("At High Limit. Data collection is complete.")
         f.close()
         epics.caput('{}'.format(self.motor_hlm), self.prev_hlm)
         epics.caput('{}'.format(self.motor_llm), self.prev_llm)
@@ -543,6 +543,7 @@ class MainWindow(Display):
         colldmov       = ''.join((self.collimator_name, ':DONEMOVING'))
 
         epics.caput('{}'.format(collExtract), 1)
+        time.sleep(5)
         while ((epics.caget(colldmov))==0):
             continue
         if (epics.caget(colldmov) == 1): 
