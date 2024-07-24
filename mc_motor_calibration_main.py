@@ -90,7 +90,10 @@ class MainWindow(Display):
         super(MainWindow, self).__init__(parent=parent, args=args, macros=macros)
 
         # Set initial size of main window
-        self.resize (1000, 800)
+        self.resize (1200, 800)
+
+        # Set initial title of main window
+        self.setWindowTitle("General Motion LVDT Calibration")
 
         # [EDIT FOR YOUR PERSONAL CONFIGURATIONS] Global Variable that holds the directory where data is to be saved
         self.path = os.environ.get("PHYSICS_DATA") + "/genMotion/lvdtCal" 
