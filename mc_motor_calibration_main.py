@@ -89,6 +89,9 @@ class MainWindow(Display):
     def __init__(self, parent=None, args=None, macros=None):
         super(MainWindow, self).__init__(parent=parent, args=args, macros=macros)
 
+        # Set initial size of main window
+        self.resize (600, 800)
+
         # [EDIT FOR YOUR PERSONAL CONFIGURATIONS] Global Variable that holds the directory where data is to be saved
         self.path = os.environ.get("PHYSICS_DATA") + "/genMotion/lvdtCal" 
         # During testing, this was /u/gu/allyc/work/project. Should be $PHYSICS_DATA/genMotion/lvdtCal or whatever user wants it to be
