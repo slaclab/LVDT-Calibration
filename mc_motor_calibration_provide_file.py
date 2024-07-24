@@ -18,6 +18,9 @@ class ProvideFileDisplay(Display):
     def __init__(self, parent=None, args=None, macros=None):
         super(ProvideFileDisplay, self).__init__(parent=parent, args=args, macros=macros)
 
+        '''Set initial size of main window'''
+        self.resize(400, 400) 
+
         #self.device_long_name = macros.get("P")
         #self.device_short_name = mc_mad_pv_names.devices_pv_name_to_mad.get(self.device_long_name)
         self.device_short_name = macros.get("MAD")
