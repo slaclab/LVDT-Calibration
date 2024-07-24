@@ -19,7 +19,7 @@ class ProvideFileDisplay(Display):
         super(ProvideFileDisplay, self).__init__(parent=parent, args=args, macros=macros)
 
         '''Set initial size of main window'''
-        self.resize(300, 300) 
+        self.resize(325, 300) 
 
         '''Set the initial title of the main window'''
         self.setWindowTitle("General Motion LVDT Calibration")
