@@ -440,7 +440,7 @@ class MainWindow(Display):
             self.main_status.setText("Moving To High Limit.")
             epics.caput('{}'.format(self.faultack), 1)
             self.highLimitCheck(self.writer)
-            self.main_status.setText("At High Limit. Done.")
+            self.main_status.setText("At High Limit. Data collection complete.")
         f.close()
         epics.caput('{}'.format(self.motor_hlm), self.prev_hlm)
         epics.caput('{}'.format(self.motor_llm), self.prev_llm)
