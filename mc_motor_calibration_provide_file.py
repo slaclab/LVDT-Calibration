@@ -21,6 +21,9 @@ class ProvideFileDisplay(Display):
         '''Set initial size of main window'''
         self.resize(300, 300) 
 
+        '''Set the initial title of the main window'''
+        self.setWindowTitle("General Motion LVDT Calibration - {}")
+
         #self.device_long_name = macros.get("P")
         #self.device_short_name = mc_mad_pv_names.devices_pv_name_to_mad.get(self.device_long_name)
         self.device_short_name = macros.get("MAD")
