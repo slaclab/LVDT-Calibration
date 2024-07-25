@@ -341,7 +341,7 @@ class MainWindow(Display):
     '''Push the current coefficients to EPICS and save the old coefficients to a .txt file.
     This function is only called when push_coefs_button is clicked. '''
     def push_cur_coefs(self, label):
-        self.old_coef_file = '{}_{}_OLD.txt'.format(self.mad_name, self.timestamp)
+        self.old_coef_file = '{}_{}_oldCoefficients.txt'.format(self.mad_name, self.timestamp)
         self.old_coef_file = os.path.join(self.path, self.old_coef_file)
         label.setText("The current coefficients have been pushed. Saving old coefficients to {}.".format(self.old_coef_file))
         self.old_coefs = self.get_prev_coefs()
@@ -483,7 +483,7 @@ class MainWindow(Display):
         self.p, self.rmse = fit(self.lvdt_v, self.position, self.lvdt_v, self.position, self.best_deg)
         
         # Generate a .txt file of the new coefficients
-        self.coef_file = '{}_{}.txt'.format(self.mad_name, self.timestamp)
+        self.coef_file = '{}_{}_newCoefficients.txt'.format(self.mad_name, self.timestamp)
         self.coef_file = os.path.join(self.path, self.coef_file)
         self.cur_coefs = []
         with open(self.coef_file, 'w') as f:
