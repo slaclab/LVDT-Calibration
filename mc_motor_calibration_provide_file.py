@@ -33,13 +33,13 @@ class ProvideFileDisplay(Display):
 
         '''Set up the button that opens a QFileDIalog'''
         self.findFileButton = QPushButton()
-        self.findFileButton.setText('Find a file.')
+        self.findFileButton.setText('Find a file')
         self.findFileButton.setStyleSheet("background-color: #9fc3f5")
         self.findFileButton.clicked.connect((lambda: self.open_file_dialog()))
 
         '''Set up the button that continues to the main display w/ selected file'''
         self.fileButton = QPushButton()
-        self.fileButton.setText('Continue with selected file.')
+        self.fileButton.setText('Continue with selected file')
         self.fileButton.clicked.connect((lambda: self.file_provided()))
         self.fileButton.setStyleSheet("background-color: #9fc3f5")
 
