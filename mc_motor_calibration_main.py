@@ -210,7 +210,7 @@ class MainWindow(Display):
                                  " padding: 5px 0px;\n"
                                  " color: rgb(255, 255, 255);\n"
                                  " max-height: 25px;\n"
-                                 " font-size: 10px;\n"
+                                 " font-size: 12px;\n"
                                  "}")
                                  
         self.frame_layout.addWidget(self.title)    
