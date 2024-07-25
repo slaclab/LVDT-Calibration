@@ -137,7 +137,7 @@ class MainWindow(Display):
 
             else:
                 self.header_text_1 = 'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. Calibration data is saved in $PHYSICS_DATA/genMotion/lvdtCal. High and Low limits will be saved and restored at the end of data collections.'.format(self.motor_twv, self.motor_egu, self.filename)
-                self.header_text_2 = 'Save High Limit value: {} \nSave Low Limit value: {}\nPrevious motor position: {} {}'.format(epics.caget('{}:MOTR.HLM'.format(self.device_name)), self.motor_egu), epics.caget('{}:MOTR.LLM'.format(self.device_name)), self.motor_egu), epics.caget('{}:MOTR.RBV'.format(self.device_name)), self.motor_egu)
+                self.header_text_2 = 'Save High Limit value: {} {} \nSave Low Limit value: {} {}\nPrevious motor position: {} {}'.format(epics.caget('{}:MOTR.HLM'.format(self.device_name)), self.motor_egu, epics.caget('{}:MOTR.LLM'.format(self.device_name)), self.motor_egu, epics.caget('{}:MOTR.RBV'.format(self.device_name)), self.motor_egu)
 
         # Intialize the main status label
         self.main_status = QLabel("Data collection has not begun yet.")
