@@ -90,7 +90,7 @@ class MainWindow(Display):
         super(MainWindow, self).__init__(parent=parent, args=args, macros=macros)
 
         # Set initial size of main window
-        self.resize (1200, 900)
+        self.resize (1200, 850)
 
         # Set initial title of main window
         self.setWindowTitle("General Motion LVDT Calibration")
