@@ -17,7 +17,7 @@ class ProvideStepSizeDisplay(Display):
         super(ProvideStepSizeDisplay, self).__init__(parent=parent, args=args, macros=macros)
 
         '''Set initial title of step size window'''
-        self.setWindowTitle("General Motion LVDT Calibration")
+        self.setWindowTitle('LVDT Calibration - {}'.format(macros.get("MAD")))
 
         self.device_short_name = macros.get("MAD")
         self.device_name = mc_mad_pv_names.devices_mad_to_pv_name.get(macros.get("MAD"))
