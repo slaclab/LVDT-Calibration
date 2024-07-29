@@ -282,7 +282,7 @@ class MainWindow(Display):
         self.coefs_label = QLabel('Coefficients for the polynomial of the best degree:')
         self.coefs_frame.addWidget(self.coefs_label)
         self.coefs_table = self.create_table(8, 3, self.coefs_frame)
-        hori_headers = ['Previous Coefficients', 'New - Previous Coefficients', 'New Coefficients']
+        hori_headers = ['Prev. Coeff.', 'New - Prev. Coeff.', 'New Coeff.']
         vert_headers = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
         self.coefs_table.setHorizontalHeaderLabels(hori_headers)
         self.coefs_table.setVerticalHeaderLabels(vert_headers)
