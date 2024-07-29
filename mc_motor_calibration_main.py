@@ -348,6 +348,8 @@ class MainWindow(Display):
         with open(self.old_coef_file, 'w') as f:
             self.lines = []
             for i in range(len(self.old_coefs)):
+                self.write("Old LVDT Coefficients for {}".format(macros.get("MAD")))
+                self.write("\n")
                 letter = chr(65 + i)
                 a = str((letter, self.old_coefs[i]))
                 self.lines.append(a)
