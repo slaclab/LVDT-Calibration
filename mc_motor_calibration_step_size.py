@@ -5,6 +5,7 @@ import epics
 from qtpy.QtWidgets import QPushButton
 import subprocess
 import mc_mad_pv_names
+import mc_device_list
 
 '''
 This file is in charge of the GUI for the Step Size Screen of the General Motion Calibration Tool. In order to execute
@@ -20,7 +21,8 @@ class ProvideStepSizeDisplay(Display):
         self.setWindowTitle('LVDT Calibration - {}'.format(macros.get("MAD")))
 
         self.device_short_name = macros.get("MAD")
-        self.device_name = mc_mad_pv_names.devices_mad_to_pv_name.get(macros.get("MAD"))
+        self.device_name = mc_device_list.get_coll_name(macros.get("MAD"))
+#        self.device_name = mc_mad_pv_names.devices_mad_to_pv_name.get(macros.get("MAD"))
         self.egu = ''.join((self.device_name, ':MOTR.EGU'))
 
         '''Connect Spin Box to MOTR.TWV channel'''

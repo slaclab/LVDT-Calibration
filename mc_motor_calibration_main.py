@@ -102,7 +102,8 @@ class MainWindow(Display):
         # Variables to be used throughout UI
         self.mad_name = macros.get("MAD")
         # self.device_name = meme.names.element_to_device(self.mad_name)
-        self.device_name = mc_mad_pv_names.devices_mad_to_pv_name.get(self.mad_name)
+        self.device_name = mc_device_list.get_coll_name(macros.get("MAD"))
+        #self.device_name = mc_mad_pv_names.devices_mad_to_pv_name.get(self.mad_name)
         self.motor_egu = epics.caget(('{}:MOTR.EGU').format(self.device_name))
         self.lvraw_egu = epics.caget(('{}:LVRAW.EGU').format(self.device_name))
         self.motor_twv = epics.caget(('{}:MOTR.TWV').format(self.device_name))
@@ -117,6 +118,7 @@ class MainWindow(Display):
         if ("FILENAME" in macros):
             self.filename = macros.get("FILENAME")
             self.csv_file = open(self.filename)
+            self.header_text_1 = 'Input file specified. To start data analysis, press the "Start Data Analysis" button.'
         else:
             self.filename = '{}_{}.csv'.format(self.mad_name, self.timestamp)
             self.csv_file = os.path.join(self.path, self.filename)
@@ -137,7 +139,9 @@ class MainWindow(Display):
 
             else:
                 self.header_text_1 = 'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. Calibration data is saved in $PHYSICS_DATA/genMotion/lvdtCal. High and Low limits will be saved and restored at the end of data collections.'.format(self.motor_twv, self.motor_egu, self.filename)
-                self.header_text_2 = 'Save High Limit value: {} {} \nSave Low Limit value: {} {}\nPrevious motor position: {} {}'.format(epics.caget('{}:MOTR.HLM'.format(self.device_name)), self.motor_egu, epics.caget('{}:MOTR.LLM'.format(self.device_name)), self.motor_egu, epics.caget('{}:MOTR.RBV'.format(self.device_name)), self.motor_egu)
+                
+        self.header_text_2 = 'Save High Limit value: {} {} \nSave Low Limit value: {} {}\nPrevious motor position: {} {}'.format(epics.caget('{}:MOTR.HLM'.format(self.device_name)), self.motor_egu, epics.caget('{}:MOTR.LLM'.format(self.device_name)), self.motor_egu, epics.caget('{}:MOTR.RBV'.format(self.device_name)), self.motor_egu)
+
 
         # Intialize the main status label
         self.main_status = QLabel("Data collection has not begun yet.")
@@ -346,10 +350,11 @@ class MainWindow(Display):
         label.setText("The current coefficients have been pushed. Saving old coefficients to {}.".format(self.old_coef_file))
         self.old_coefs = self.get_prev_coefs()
         with open(self.old_coef_file, 'w') as f:
+            # Write the header at the top of the file
+            f.write("Old LVDT coefficients for {}\n".format(self.mad_name))
+            f.write("Generated on: {}\n\n".format(self.timestamp))
             self.lines = []
             for i in range(len(self.old_coefs)):
-                self.write("Old LVDT Coefficients for {}".format(macros.get("MAD")))
-                self.write("\n")
                 letter = chr(65 + i)
                 a = str((letter, self.old_coefs[i]))
                 self.lines.append(a)
@@ -361,7 +366,7 @@ class MainWindow(Display):
     def get_prev_coefs(self):
         self.list_of_coefs = []
         for c in list(map(chr, range(ord('A'), ord('H') + 1))):
-            self.tuple = (self.device_name, ':LVPOS_SUB.', c)
+            self.tuple = (self.device_name, ':LVPOS.', c)
             self.sub_pv_name = ''.join(self.tuple)
             self.sub_pv_val = epics.caget(self.sub_pv_name)
             self.list_of_coefs.append(self.sub_pv_val)
@@ -489,6 +494,9 @@ class MainWindow(Display):
         self.coef_file = os.path.join(self.path, self.coef_file)
         self.cur_coefs = []
         with open(self.coef_file, 'w') as f:
+            # Write the header at the top of the file
+            f.write("New LVDT coefficients for {}\n".format(self.mad_name))
+            f.write("Generated on: {}\n\n".format(self.timestamp))
             self.lines = []
             for i in range(len(self.p)):
                 letter = chr(65 + i)
