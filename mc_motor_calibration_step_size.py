@@ -4,13 +4,11 @@ from pydm import Display, PyDMApplication
 import epics
 from qtpy.QtWidgets import QPushButton
 import subprocess
-import mc_mad_pv_names
-import mc_device_list
 
 '''
 This file is in charge of the GUI for the Step Size Screen of the General Motion Calibration Tool. In order to execute
-this file, call the terminal command "pydm -m '{"MAD":"[MAD]"}' motor_calibration_step_size.py", where [MAD] is the device's
-short name. An example would be pydm -m '{"MAD":"CEDOG-POSY"}' motor_calibration_step_size.py.
+this file, call the terminal command "pydm -m '{"MAD":"[MAD]","MOTOR":"[MOTOR]"}' motor_calibration_step_size.py", where [MAD] is the device's
+MAD name and [MOTOR] is device's control system name without any attribute. An example would be pydm -m '{"MAD":"CEDOG-POSY","MOTOR":"COLL:DOG:655:POSY"}' motor_calibration_step_size.py.
 '''
 
 class ProvideStepSizeDisplay(Display):
@@ -20,15 +18,14 @@ class ProvideStepSizeDisplay(Display):
         '''Set initial title of step size window'''
         self.setWindowTitle('LVDT Calibration - {}'.format(macros.get("MAD")))
 
-        self.device_short_name = macros.get("MAD")
-        self.device_name = mc_device_list.get_coll_name(macros.get("MAD"))
-#        self.device_name = mc_mad_pv_names.devices_mad_to_pv_name.get(macros.get("MAD"))
+        self.mad_name = macros.get("MAD")
+        self.device_name = macros.get("MOTOR")
         self.egu = ''.join((self.device_name, ':MOTR.EGU'))
 
         '''Connect Spin Box to MOTR.TWV channel'''
         self.PyDMSpinbox.channel = "ca://{}:MOTR.TWV".format(self.device_name)
 
-        self.TitleLabel.setText(("General Motion Calibration - {}").format(macros.get("MAD")))
+        self.TitleLabel.setText(("General Motion Calibration - {}").format(self.mad_name))
         self.PyDMLabel.setText(("Provide a step size in {}. This will be the interval at which data will be collected.\nTo proceed, you must first press ENTER on the keyboard and then click NEXT.").format(epics.caget('{}'.format(self.egu))))
         
         self.macros_string = '{"MAD":"' + macros.get("MAD") + '"}'
@@ -43,7 +40,7 @@ class ProvideStepSizeDisplay(Display):
     '''When button is pressed, subprocess is launched to open main screen'''
     def next_display(self):
         self.next_file = environ.get("TOOLS") + "/script/mc_lvdt_calibration/mc_motor_calibration_main.py" 
-        subprocess.call(['python', self.next_file , self.device_short_name])
+        subprocess.call(['python', self.next_file , self.mad_name , self.device_name])
 
     def ui_filename(self):
         return 'mc_motor_calibration_step_size.ui'

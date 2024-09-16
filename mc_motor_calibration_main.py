@@ -36,9 +36,7 @@ import  meme.names
 This file sets up the GUI for the main display for the General Motion Calibration Tool. It is also responsible for
 the execution of the data collection and data analysis. This file utilizes multithreading in order to properly handle
 real time GUI updates during motor movement. To execute this screen on its own, enter the terminal command
-'python mc_motor_calibration_main.py [MAD]', where [MAD] is the device's name (one of the short names on the left side
-of the devices list below). 
-*Warning: Execution of this screen alone does not allow you to provide a .csv file or step size. In order to provide such
+'python mc_motor_calibration_main.py [MAD] [MOTOR]', where [MAD] is the MAD name and MOTOR is the control system name without any attribute. Execution of this screen alone does not allow you to provide a .csv file or step size. In order to provide such
 information for the program, call one of the prior screens of the 'flow'.*
 *Warning: Pushing 1 to extract all for collimators was deleted from this file and, if to be readded, must also be tested.*
 '''
@@ -92,18 +90,16 @@ class MainWindow(Display):
         # Set initial size of main window
         self.resize (1200, 875)
 
+        # Variables to be used throughout UI
+        self.mad_name = macros.get("MAD")
+        self.device_name = macros.get("MOTOR")
+      
         # Set initial title of main window
-        self.setWindowTitle('LVDT Calibration - {}'.format(macros.get("MAD")))
+        self.setWindowTitle('LVDT Calibration - {}'.format(self.mad_name))
 
         # [EDIT FOR YOUR PERSONAL CONFIGURATIONS] Global Variable that holds the directory where data is to be saved
         self.path = os.environ.get("PHYSICS_DATA") + "/genMotion/lvdtCal" 
-        # During testing, this was /u/gu/allyc/work/project. Should be $PHYSICS_DATA/genMotion/lvdtCal or whatever user wants it to be
 
-        # Variables to be used throughout UI
-        self.mad_name = macros.get("MAD")
-        # self.device_name = meme.names.element_to_device(self.mad_name)
-        self.device_name = mc_device_list.get_coll_name(macros.get("MAD"))
-        #self.device_name = mc_mad_pv_names.devices_mad_to_pv_name.get(self.mad_name)
         self.motor_egu = epics.caget(('{}:MOTR.EGU').format(self.device_name))
         self.lvraw_egu = epics.caget(('{}:LVRAW.EGU').format(self.device_name))
         self.motor_twv = epics.caget(('{}:MOTR.TWV').format(self.device_name))
@@ -119,6 +115,7 @@ class MainWindow(Display):
             self.filename = macros.get("FILENAME")
             self.csv_file = open(self.filename)
             self.header_text_1 = 'Input file specified. To start data analysis, press the "Start Data Analysis" button.'
+            self.header_text_2 = ''
         else:
             self.filename = '{}_{}.csv'.format(self.mad_name, self.timestamp)
             self.csv_file = os.path.join(self.path, self.filename)
@@ -134,13 +131,9 @@ class MainWindow(Display):
                     self.neg_motor = self.device_name
                     self.pos_motor = self.device_name[:-4] + 'NEG' + self.device_name[-1]
                     self.opposite_jaw = self.pos_motor
-                self.header_text_1 =  'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. Calibration data is saved in {}. High and Low limits will be saved and restored at the end of data collections.'\
-                    .format(self.motor_twv, self.motor_egu, self.filename, self.path)
-
-            else:
-                self.header_text_1 = 'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. Calibration data is saved in $PHYSICS_DATA/genMotion/lvdtCal. High and Low limits will be saved and restored at the end of data collections.'.format(self.motor_twv, self.motor_egu, self.filename)
                 
-        self.header_text_2 = 'Save High Limit value: {} {} \nSave Low Limit value: {} {}\nPrevious motor position: {} {}'.format(epics.caget('{}:MOTR.HLM'.format(self.device_name)), self.motor_egu, epics.caget('{}:MOTR.LLM'.format(self.device_name)), self.motor_egu, epics.caget('{}:MOTR.RBV'.format(self.device_name)), self.motor_egu)
+            self.header_text_1 = 'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. Calibration data is saved in $PHYSICS_DATA/genMotion/lvdtCal. High and Low limits will be saved and restored at the end of data collections.'.format(self.motor_twv, self.motor_egu, self.filename)
+            self.header_text_2 = 'Save High Limit value: {} {} \nSave Low Limit value: {} {}\nPrevious motor position: {} {}'.format(epics.caget('{}:MOTR.HLM'.format(self.device_name)), self.motor_egu, epics.caget('{}:MOTR.LLM'.format(self.device_name)), self.motor_egu, epics.caget('{}:MOTR.RBV'.format(self.device_name)), self.motor_egu)
 
 
         # Intialize the main status label
@@ -189,7 +182,6 @@ class MainWindow(Display):
 
         self.setup_title()
         self.setup_header()
-        # self.frame_layout.addWidget(self.main_status)
         self.frame_layout.addWidget(self.collection_button)
         self.setup_statuses()
         self.frame_layout.addWidget(self.analysis_button)
@@ -202,7 +194,7 @@ class MainWindow(Display):
     '''Setup the general title shared between all three screens'''
     def setup_title(self):
         self.title = PyDMLabel()
-        title_text = 'General Motion LVDT Calibration - {}'.format(macros.get("MAD"))
+        title_text = 'General Motion LVDT Calibration - {}'.format(self.mad_name)
         self.title.setText(title_text)
         
         self.title.setStyleSheet("QLabel {\n"
@@ -304,7 +296,6 @@ class MainWindow(Display):
     def setup_default_err(self):
         self.err_frame = QVBoxLayout()
         self.err_label = QLabel('Error analysis:')
-        # self.err_label.setFont(self.bold)
         self.err_frame.addWidget(self.err_label)
         self.err_frame.addWidget(self.err_table)
         err_hori_headers = ['LVDT ({})'.format(self.lvraw_egu), 'Est. position ({})'.format(self.motor_egu), 'Act. position ({})'.format(self.motor_egu), 'Error ({})'.format(self.motor_egu)]
@@ -329,7 +320,6 @@ class MainWindow(Display):
         for i in range(rows):
             for j in range(cols):
                 self.table.setItem(i, j, QTableWidgetItem("N/A"))
-        # self.table.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         frame.addWidget(self.table)
@@ -435,8 +425,7 @@ class MainWindow(Display):
             self.collimatorExtract()
             self.main_status.setText('Both jaws at Outer Limit. Beginning Data Collection.')
         # progress_callback.emit('At High Limit.')
-        else:
-            self.main_status.setText('Moving to High Limit before data collection.')
+            self.main_status.setText('Moving the axis needing calibration to High Limit before data collection.')
             self.moveToHILimit()
             self.main_status.setText('At High Limit. Beginning Data Collection.')
               # New Limits
