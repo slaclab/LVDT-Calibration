@@ -8,8 +8,8 @@ import mc_mad_pv_names
 
 '''
 This file is in charge of the GUI for the Provide File Screen of the General Motion Calibration Tool.
-To execute this file, call the terminal command "pydm -m '{"MAD":"[MAD]","MOTOR":"[MOTOR]"}' motor_calibration_provide_file.py",
-where [MOTOR] is the device's control system name without any attribute and [MAD] is the oracle device name. An example would be pydm -m '{"MAD":"CE21334,"MOTOR":"COLL:LI21:334"}' motor_calibration_provide_file.py.
+To execute this file, call the terminal command "pydm -m '{"MAD":"[MAD]","MOTOR":"[MOTOR]"}' mc_motor_calibration_provide_file.py",
+where [MOTOR] is the device's control system name without any attribute and [MAD] is the oracle device name. An example would be pydm -m '{"MAD":"CE21334,"MOTOR":"COLL:LI21:334"}' mc_motor_calibration_provide_file.py.
 This is the top of the 'flow' for the General Motion Calibration Tool. From this screen, the user is able to access
 the Step Size Screen and the Main Screen.
 '''

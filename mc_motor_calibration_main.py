@@ -732,11 +732,12 @@ def pow_str(n):
     return 'x^{}'.format(n)
 
 device = sys.argv[1]
-if (len(sys.argv)  == 3):
-    file = sys.argv[2]
-    macros = {"MAD": device, "FILENAME": file}
+pv     = sys.argv[2]
+if (len(sys.argv)  == 4):
+    file = sys.argv[3]
+    macros = {"MAD": device, "MOTOR": pv, "FILENAME": file}
 else:
-    macros = {"MAD": device}
+    macros = {"MAD": device, "MOTOR":pv}
 # print(macros.get("MAD"))
 app = QApplication([])
 # window = MainWindow()

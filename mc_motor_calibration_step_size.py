@@ -7,8 +7,8 @@ import subprocess
 
 '''
 This file is in charge of the GUI for the Step Size Screen of the General Motion Calibration Tool. In order to execute
-this file, call the terminal command "pydm -m '{"MAD":"[MAD]","MOTOR":"[MOTOR]"}' motor_calibration_step_size.py", where [MAD] is the device's
-MAD name and [MOTOR] is device's control system name without any attribute. An example would be pydm -m '{"MAD":"CEDOG-POSY","MOTOR":"COLL:DOG:655:POSY"}' motor_calibration_step_size.py.
+this file, call the terminal command "pydm -m '{"MAD":"[MAD]","MOTOR":"[MOTOR]"}' mc_motor_calibration_step_size.py", where [MAD] is the device's
+MAD name and [MOTOR] is device's control system name without any attribute. An example would be pydm -m '{"MAD":"CEDOG-POSY","MOTOR":"COLL:DOG:655:POSY"}' mc_motor_calibration_step_size.py.
 '''
 
 class ProvideStepSizeDisplay(Display):
