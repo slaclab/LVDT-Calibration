@@ -45,7 +45,7 @@ information for the program, call one of the prior screens of the 'flow'.*
  Defines the signals available from a running worker thread.
 '''
 class WorkerSignals(QObject):
- 
+
     finished = pyqtSignal()
     error = pyqtSignal(tuple)
     result = pyqtSignal(object)
@@ -93,12 +93,12 @@ class MainWindow(Display):
         # Variables to be used throughout UI
         self.mad_name = macros.get("MAD")
         self.device_name = macros.get("MOTOR")
-      
+
         # Set initial title of main window
         self.setWindowTitle('LVDT Calibration - {}'.format(self.mad_name))
 
         # [EDIT FOR YOUR PERSONAL CONFIGURATIONS] Global Variable that holds the directory where data is to be saved
-        self.path = os.environ.get("PHYSICS_DATA") + "/genMotion/lvdtCal" 
+        self.path = os.environ.get("PHYSICS_DATA") + "/genMotion/lvdtCal"
 
         self.motor_egu = epics.caget(('{}:MOTR.EGU').format(self.device_name))
         self.lvraw_egu = epics.caget(('{}:LVRAW.EGU').format(self.device_name))
@@ -131,7 +131,7 @@ class MainWindow(Display):
                     self.neg_motor = self.device_name
                     self.pos_motor = self.device_name[:-4] + 'NEG' + self.device_name[-1]
                     self.opposite_jaw = self.pos_motor
-                
+
             self.header_text_1 = 'No input file specified. Data will be collected at every {} {}. Data will be saved to {}. Calibration data is saved in $PHYSICS_DATA/genMotion/lvdtCal. High and Low limits will be saved and restored at the end of data collections.'.format(self.motor_twv, self.motor_egu, self.filename)
             self.header_text_2 = 'Save High Limit value: {} {} \nSave Low Limit value: {} {}\nPrevious motor position: {} {}'.format(epics.caget('{}:MOTR.HLM'.format(self.device_name)), self.motor_egu, epics.caget('{}:MOTR.LLM'.format(self.device_name)), self.motor_egu, epics.caget('{}:MOTR.RBV'.format(self.device_name)), self.motor_egu)
 
@@ -196,7 +196,7 @@ class MainWindow(Display):
         self.title = PyDMLabel()
         title_text = 'General Motion LVDT Calibration - {}'.format(self.mad_name)
         self.title.setText(title_text)
-        
+
         self.title.setStyleSheet("QLabel {\n"
                                  " qproperty-alignment:AlignCenter;\n"
                                  " border: 1px solid #FF17365D;\n"
@@ -208,8 +208,8 @@ class MainWindow(Display):
                                  " max-height: 25px;\n"
                                  " font-size: 12px;\n"
                                  "}")
-                                 
-        self.frame_layout.addWidget(self.title)    
+
+        self.frame_layout.addWidget(self.title)
 
     '''Set up header labels based on texts previously initialized'''
     def setup_header(self):
@@ -302,7 +302,7 @@ class MainWindow(Display):
         self.err_table.setHorizontalHeaderLabels(err_hori_headers)
         self.frame_layout.addLayout(self.err_frame)
 
-    '''General function to easily create labels'''    
+    '''General function to easily create labels'''
     def create_label(self, frame, text, box = False):
         self.label = PyDMLabel()
         self.label.setText(text)
@@ -310,9 +310,9 @@ class MainWindow(Display):
         frame.addWidget(self.label)
         if (box==True):
             self.label.setFrameShape(QtWidgets.QFrame.Box)
-        return self.label    
+        return self.label
 
-    '''General function to easily create tables'''    
+    '''General function to easily create tables'''
     def create_table(self, rows, cols, frame):
         self.table = QTableWidget()
         self.table.setRowCount(rows)
@@ -330,11 +330,20 @@ class MainWindow(Display):
         table.resizeColumnsToContents()
         table.resizeRowsToContents()
         table.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)  
+        table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
     '''Push the current coefficients to EPICS and save the old coefficients to a .txt file.
     This function is only called when push_coefs_button is clicked. '''
     def push_cur_coefs(self, label):
+        coef_push=0
+        print("\nPushed Coefficients:\n")
+        for c in list(map(chr, range(ord('A'), ord('H') + 1))):
+            self.tuple = (self.device_name, ':LVPOS.', c)
+            self.sub_pv_name = ''.join(self.tuple)
+            self.sub_pv_val = epics.caput(self.sub_pv_name, self.cur_coefs[coef_push])
+            print(f"Coefficient {c}: {self.cur_coefs[coef_push]:.5g}")
+            coef_push+=1
+
         self.old_coef_file = '{}_{}_oldCoefficients.txt'.format(self.mad_name, self.timestamp)
         self.old_coef_file = os.path.join(self.path, self.old_coef_file)
         label.setText("The current coefficients have been pushed. Saving old coefficients to {}.".format(self.old_coef_file))
@@ -349,7 +358,7 @@ class MainWindow(Display):
                 a = str((letter, self.old_coefs[i]))
                 self.lines.append(a)
             f.writelines('\n'.join(self.lines))
-        f.close()  
+        f.close()
 
     '''Function which retrieves the previous coefficients.
     This is used to display previous coefficients and compare them to the new coefficients'''
@@ -391,14 +400,13 @@ class MainWindow(Display):
         self.err_table.resizeColumnsToContents()
         self.err_table.resizeRowsToContents()
         self.err_table.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.err_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)  
+        self.err_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
     def progress_fn(self, n):
         self.main_status.setText(n)
 
     def thread_complete(self):
-        print("THREAD COMPLETE!")
-        # self.l.setText("Done.")
+        print("Done")
 
     '''Function that initalizes a worker thread for the motor movement and data collection. Called after data collection button is pressed. '''
     def data_collection(self):
@@ -413,13 +421,13 @@ class MainWindow(Display):
     ''' Function that is called after the launch of a new thread. Handles motor movement, data collection/output,
     and status update on the screen.
     '''
-    def move_motor_generate_csv(self, progress_callback):            
+    def move_motor_generate_csv(self, progress_callback):
         self.faultack = ''.join((self.device_name, ':FAULTACK.PROC'))
         epics.caput('{}'.format(self.faultack), 1)
         # progress_callback.emit('Moving To High Limit.')
         self.main_status.setText('Saving current limits.')
-        self.prev_hlm = epics.caget(self.motor_hlm) 
-        self.prev_llm = epics.caget(self.motor_llm)  
+        self.prev_hlm = epics.caget(self.motor_hlm)
+        self.prev_llm = epics.caget(self.motor_llm)
         if ((self.device_name)[:4] == 'COLL'):
             self.main_status.setText('Device is a Collimator. Fully open both jaws before data collection.')
             self.collimatorExtract()
@@ -446,9 +454,9 @@ class MainWindow(Display):
         f.close()
         epics.caput('{}'.format(self.motor_hlm), self.prev_hlm)
         epics.caput('{}'.format(self.motor_llm), self.prev_llm)
-        
 
-    
+
+
     '''Function that performs data analysis and updates display. Called after data anlysis button is pressed.'''
     def data_analysis(self):
         # Initalize a .png of best fit line and data points
@@ -474,10 +482,10 @@ class MainWindow(Display):
         self.degrees_table.resizeColumnsToContents()
         self.degrees_table.resizeRowsToContents()
         self.degrees_table.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.degrees_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch) 
+        self.degrees_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
         self.p, self.rmse = fit(self.lvdt_v, self.position, self.lvdt_v, self.position, self.best_deg)
-        
+
         # Generate a .txt file of the new coefficients
         self.coef_file = '{}_{}_newCoefficients.txt'.format(self.mad_name, self.timestamp)
         self.coef_file = os.path.join(self.path, self.coef_file)
@@ -541,7 +549,7 @@ class MainWindow(Display):
     Futhermore, the functions handle the statistical math that goes behind finding the best fit polynomial.---'''
 
     def collimatorExtract(self):
-    
+
         '''Extracts a collimator. i.e. Fully opens the jaws '''
         self.collimator_name = mc_device_list.get_coll_name(self.mad_name)
         collExtract    = ''.join((self.collimator_name, ':EXTRACT'))
@@ -551,12 +559,12 @@ class MainWindow(Display):
         time.sleep(5)
         while ((epics.caget(colldmov))==0):
             continue
-        if (epics.caget(colldmov) == 1): 
+        if (epics.caget(colldmov) == 1):
             print('Done. Jaws extracted to fully open position. Pause.')
 
     def moveToHILimit(self):
         '''Moves motor to high limit before starting data
-        collection '''    
+        collection '''
         moveToHighLimit = ''.join((self.device_name,':MOTRHI'))
         motordmov       = ''.join((self.device_name, ':MOTR.DMOV'))
 
@@ -564,12 +572,12 @@ class MainWindow(Display):
         while ((epics.caget(motordmov))==0):
             continue
         if (epics.caget(motordmov) == 1):
-            print('Done. At High Limit. Pause.')    
-    
+            print('Done. At High Limit. Pause.')
+
     '''Handles if the device is a collimator--in such case, the other motor must be moved to its outer limit before calibration '''
     def moveOtherMotor(self):
         if (self.cur_jaw == "POS"):
-            moveToOuterLimit = ''.join((self.opposite_jaw,':MOTRLO')) 
+            moveToOuterLimit = ''.join((self.opposite_jaw,':MOTRLO'))
         else:
             moveToOuterLimit = ''.join((self.opposite_jaw,':MOTRHI'))
         motordmov       = ''.join((self.device_name, ':MOTR.DMOV'))
@@ -577,10 +585,10 @@ class MainWindow(Display):
         while ((epics.caget(motordmov))==0):
             continue
         if (epics.caget(motordmov) == 1):
-            print('Done. Other jaw moved to outer limit. Pause.')  
+            print('Done. Other jaw moved to outer limit. Pause.')
 
     def lowLimitCheck(self, writer):
-        '''Checks if motor hit low limit       
+        '''Checks if motor hit low limit
         '''
         lowlimit_status = ''.join((self.device_name, ':MOTR.LLS'))
         motordmov        = ''.join((self.device_name, ':MOTR.DMOV'))
@@ -599,8 +607,8 @@ class MainWindow(Display):
                     motorpos_rbv     = ''.join((self.device_name, ':MOTR.RBV'))
                     motor_lvdt       = ''.join((self.device_name, ':LVRAW'))
                     print('MoVAL at ',epics.caget(motorpos))
-                    RBV   = epics.caget(motorpos_rbv) 
-                    LVRAW = epics.caget(motor_lvdt) 
+                    RBV   = epics.caget(motorpos_rbv)
+                    LVRAW = epics.caget(motor_lvdt)
                     print('DMOV at ',epics.caget(motordmov))
                     rows = [LVRAW,RBV]
                     print(rows)
@@ -609,7 +617,7 @@ class MainWindow(Display):
         print('Device on Low Limit. ')
 
     def moveReverse(self, writer):
-        '''Move motor reverse by TWK amount       
+        '''Move motor reverse by TWK amount
         '''
         motortwr         = ''.join((self.device_name, ':MOTR.TWR'))
         motordmov        = ''.join((self.device_name, ':MOTR.DMOV'))
@@ -634,15 +642,15 @@ class MainWindow(Display):
                 motorpos_rbv     = ''.join((self.device_name, ':MOTR.RBV'))
                 motor_lvdt       = ''.join((self.device_name, ':LVRAW'))
                 print('MoVAL at ',epics.caget(motorpos))
-                RBV   = epics.caget(motorpos_rbv) 
-                LVRAW = epics.caget(motor_lvdt) 
+                RBV   = epics.caget(motorpos_rbv)
+                LVRAW = epics.caget(motor_lvdt)
                 print('DMOV at ',epics.caget(motordmov))
                 rows = [LVRAW,RBV]
                 print(rows)
                 writer.writerow(rows)
 
     def highLimitCheck(self, writer):
-        '''Checks if motor hit high limit       
+        '''Checks if motor hit high limit
         '''
         highlimit_status = ''.join((self.device_name, ':MOTR.HLS'))
         motordmov        = ''.join((self.device_name, ':MOTR.DMOV'))
@@ -661,8 +669,8 @@ class MainWindow(Display):
                     motorpos_rbv     = ''.join((self.device_name, ':MOTR.RBV'))
                     motor_lvdt       = ''.join((self.device_name, ':LVRAW'))
                     print('MoVAL at ',epics.caget(motorpos))
-                    RBV   = epics.caget(motorpos_rbv) 
-                    LVRAW = epics.caget(motor_lvdt) 
+                    RBV   = epics.caget(motorpos_rbv)
+                    LVRAW = epics.caget(motor_lvdt)
                     print('DMOV at ',epics.caget(motordmov))
                     rows = [LVRAW,RBV]
                     print(rows)
@@ -672,7 +680,7 @@ class MainWindow(Display):
         print('Device on High Limit. ')
 
     def moveForward(self, writer):
-        '''Move motor forward by TWK amount       
+        '''Move motor forward by TWK amount
         '''
         motortwf         = ''.join((self.device_name, ':MOTR.TWF'))
         motordmov        = ''.join((self.device_name, ':MOTR.DMOV'))
@@ -689,14 +697,14 @@ class MainWindow(Display):
                 motorpos_rbv     = ''.join((self.device_name, ':MOTR.RBV'))
                 motor_lvdt       = ''.join((self.device_name, ':LVRAW'))
                 print('MoVAL at ',epics.caget(motorpos))
-                RBV   = epics.caget(motorpos_rbv) 
-                LVRAW = epics.caget(motor_lvdt) 
+                RBV   = epics.caget(motorpos_rbv)
+                LVRAW = epics.caget(motor_lvdt)
                 print('DMOV at ',epics.caget(motordmov))
                 rows=[LVRAW,RBV]
                 print(rows)
                 writer.writerow(rows)
                 time.sleep(1)
-            
+
 def cv(x, y, deg):
         loo = LeaveOneOut()
         rmse_arr = np.array([])
