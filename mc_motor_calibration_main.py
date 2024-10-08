@@ -338,7 +338,7 @@ class MainWindow(Display):
         coef_push=0
         print("\nPushed Coefficients:\n")
         for c in list(map(chr, range(ord('A'), ord('H') + 1))):
-            self.tuple = (self.device_name, ':LVPOS.', c)
+            self.tuple = (self.device_name, ':LVPOS_SUB.', c)
             self.sub_pv_name = ''.join(self.tuple)
             self.sub_pv_val = epics.caput(self.sub_pv_name, self.cur_coefs[coef_push])
             print(f"Coefficient {c}: {self.cur_coefs[coef_push]:.5g}")
@@ -365,7 +365,7 @@ class MainWindow(Display):
     def get_prev_coefs(self):
         self.list_of_coefs = []
         for c in list(map(chr, range(ord('A'), ord('H') + 1))):
-            self.tuple = (self.device_name, ':LVPOS.', c)
+            self.tuple = (self.device_name, ':LVPOS_SUB.', c)
             self.sub_pv_name = ''.join(self.tuple)
             self.sub_pv_val = epics.caget(self.sub_pv_name)
             self.list_of_coefs.append(self.sub_pv_val)
