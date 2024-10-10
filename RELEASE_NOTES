@@ -8,6 +8,8 @@
 #  Auth: 16-Jul-2024, N. Balakrishnan    (namrata)
 #  Rev:  dd-mmm-yyyy, Reviewer's Name    (USERNAME)
 #================================================================
+R2.0.0 10-Oct-2024 S. Johnson (samjohn):
+   Simplify calibration routine
 R1.0.4 08-Oct-2024 S. Johnson (samjohn):
    Hardcode LVPOS_SUB for test
 R1.0.3 30-Sept-2024, S. Johnson (samjohn):
