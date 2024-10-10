@@ -3,6 +3,7 @@ from epics import caput, caget
 from time import sleep
 from pandas import read_csv
 from numpy import polyfit, polyval, linspace, min, max
+from datetime import datetime
 import matplotlib.pyplot as plt
 import os
 
@@ -11,39 +12,23 @@ import os
 1. Move both jaws to their outer limit
     - For NEGY this should be -52mm
     - For POSY this should be +52mm
-
-2. Run Script with python ../mc_calibrate_lvdt.py
-    - Required: --device
-        - Desc:    Full collimator device name
-        - Type:    String
-        - Range:   Any collimator
-
-    - Optional: --step
-        - Desc:    Step size in EGU of motor
-        - Type:    Float
-        - Range:   0.0...INF
-        - Default: Current tweak setting
-
-    - Optional: --sub
-        - Desc:    Old naming convention of LVPOS_SUB
-        - Type:    Bool
-        - Range:   True...False
-        - Default: True
-
-    - Optional: --measurements
-        - Desc:    Amount of points to collect at position
-        - Type:    Int
-        - Range:   1...INF
-        - Default: 4
-
-3. Example command line
-    - python mc_calibrate_lvdt.py --device COLL:BPN26:424:POSY --step 5 --sub True --measurements 2
+2. Example command line
+    - python mc_calibrate_lvdt.py --device COLL:BPN26:424:POSY --step 5 --sub True --measurements 4
 """
 def mc_calibrate_lvdt(device: str, step: float, sub: bool, measurements: int) -> None:
 
+    # Path Reconciliation
+    now = datetime.now()
+    now_fmt = now.strftime('%b-%d-%Y-%I-%M%p')
+    cal_path = os.environ.get('PHYSICS_DATA') + '/genMotion/lvdt/' + device.replace(':','_')
+    if not os.path.isdir(cal_path): os.mkdir(cal_path)
+    data_file_name =  f'{cal_path}/DATA_{now_fmt}.csv'
+    plot_file_name = f'{cal_path}/PLOT_{now_fmt}.png'
+    coef_file_name = f'{cal_path}/Coefficients.txt'
+
     # Device Naming Convention
-    coeff_prefix = "LVPOS_SUB" if sub else "LVPOS"
-    convention = ["HLS", "TWF", "LLS", "TWR"]
+    coeff_prefix = 'LVPOS_SUB' if sub else 'LVPOS'
+    convention = ['HLS', 'TWF', 'LLS', 'TWR']
     if "NEG" not in device: convention = convention[2:] + convention[:2]
     
     # Get Previous Params
@@ -54,7 +39,7 @@ def mc_calibrate_lvdt(device: str, step: float, sub: bool, measurements: int) ->
     if step is not None: caput(f'{device}:MOTR.TWV', step)
 
     # Sweep
-    with open(f'{device.replace(":","_")}.csv','w') as file:
+    with open(data_file_name,'w') as file:
         for j in range(2):
             while not bool(caget(f'{device}:MOTR.{convention[0 + 2*j]}')):
                 for i in range(measurements):
@@ -68,7 +53,7 @@ def mc_calibrate_lvdt(device: str, step: float, sub: bool, measurements: int) ->
     caput(f'{device}:MOTR.TWV', curr_twv)
 
     # Read Data
-    data = read_csv(f'{device.replace(":","_")}.csv', header=None).to_numpy()
+    data = read_csv(data_file_name, header=None).to_numpy()
 
     # Fit
     new_coeff = polyfit(data[:,0], data[:,1], 7)
@@ -76,32 +61,28 @@ def mc_calibrate_lvdt(device: str, step: float, sub: bool, measurements: int) ->
     y_fit = polyval(new_coeff, x_fit)
     plt.plot(x_fit, y_fit, label='Fitted Polynomial', color='blue')
     plt.scatter(data[:,0], data[:,1], label='Original Data', color='red')
-    plt.xlabel('Jaw Position (mm)')
-    plt.ylabel('LVDT Feedback (V)')
-    plt.legend()
-    plt.grid()
-    plt.title(f'{device}')
-    plt.tight_layout()
-    plt.savefig(f'{device.replace(":","_")}.png')
+    plt.xlabel('Jaw Position (mm)'); plt.ylabel('LVDT Feedback (V)')
+    plt.legend(); plt.grid(); plt.title(f'{device}'); plt.tight_layout()
+    plt.savefig(plot_file_name)
     plt.close()
 
     # Print Results and Display
-    os.system(f'eog {os.path.abspath(os.path.dirname(__file__))}/{device.replace(":","_")}.png')
-    print('Old Coefficients     New Coeficients')
-    for i in range(7):
-        print(f'{curr_coeff[i]:+.3E}             {new_coeff[i]:+.3E}')
-
-        # Preserve Coeff A for Beamline
-        if i is not 0: caput(f"{device}:{coeff_prefix}.{chr(ord('A') + i)}", new_coeff[i])
+    os.system(f'eog {plot_file_name}')
+    with open(coef_file_name,'a') as file:
+        file.write(f'{now_fmt}  ')
+        for i in range(7):
+            file.write(f'{new_coeff[i]:+.6E}  ')
+            if i is not 0: caput(f"{device}:{coeff_prefix}.{chr(ord('A') + i)}", new_coeff[i])
+        file.write('\n')
     
 
 if __name__ == '__main__':
 
     parser = ArgumentParser()
-    parser.add_argument('--device', type=str, required=True)
-    parser.add_argument('--step', type=float, required=False, default=None)
-    parser.add_argument('--sub', type=bool, required=False, default=True)
-    parser.add_argument('--measurements', type=int, required=False, default=4)
+    parser.add_argument('--device', type=str, required=True, help='full PV name of collimator')
+    parser.add_argument('--step', type=float, required=False, default=None, help='step size in egu')
+    parser.add_argument('--sub', type=bool, required=False, default=True, help='naming convention if LVPOS_SUB')
+    parser.add_argument('--measurements', type=int, required=False, default=4, help='measurements at each position')
 
     args = parser.parse_args()
     mc_calibrate_lvdt(args.device, args.step, args.sub, args.measurements)
