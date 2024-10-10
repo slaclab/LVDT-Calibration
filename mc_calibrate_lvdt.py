@@ -68,11 +68,13 @@ def mc_calibrate_lvdt(device: str, step: float, sub: bool, measurements: int) ->
 
     # Print Results and Display
     os.system(f'eog {plot_file_name}')
+    user_input = input("Apply Coefficients? (y/n):").strip().upper()
     with open(coef_file_name,'a') as file:
         file.write(f'{now_fmt}  ')
         for i in range(7):
             file.write(f'{new_coeff[i]:+.6E}  ')
-            if i is not 0: caput(f"{device}:{coeff_prefix}.{chr(ord('A') + i)}", new_coeff[i])
+            if i is not 0 and user_input in ['y','Y']:
+                    caput(f"{device}:{coeff_prefix}.{chr(ord('A') + i)}", new_coeff[i])
         file.write('\n')
     
 
